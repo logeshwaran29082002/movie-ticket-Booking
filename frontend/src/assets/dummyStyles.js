@@ -48,7 +48,7 @@ export const navbarStyles = {
   // Main nav container
   nav: {
     base: "fixed left-4 right-4 top-6 z-50 transition-all duration-300",
-    scrolled: "py-3 bg-black/85 backdrop-blur-sm shadow-xl rounded-3xl",
+    scrolled: "bg-black/85 backdrop-blur-sm shadow-xl rounded-3xl",
     notScrolled: "py-4 bg-black backdrop-blur-sm rounded-full"
   },
 
@@ -56,8 +56,8 @@ export const navbarStyles = {
   container: "max-w-7xl mx-auto px-4 md:px-1 lg:px-1 xl:px-8 flex items-center justify-between",
   
   // Logo section
-  logoContainer: "flex items-center gap-3 z-20 flex-shrink-0",
-  logoIconContainer: "bg-black p-3 md:p-3 xl:p-3 lg:p-3 rounded-full border border-red-600",
+  logoContainer: "flex items-center gap-3 z-20 flex-shrink-0 translate-x-[200px]",
+  logoIconContainer: "bg-black p-3 md:p-3 xl:p-3 lg:p-3 rounded-full border border-red-600 ",
   logoIcon: "h-4 w-4 md:h-2 md:w-2 lg:h-4 lg:w-4 xl:w-4 xl:h-4  text-red-500",
   logoText: "text-lg md:text-sm xl:text-lg lg:tex-lg font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-red-200 font-[pacifico]",
 
