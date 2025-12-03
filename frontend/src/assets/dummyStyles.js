@@ -45,71 +45,87 @@ export const bannerStyles = {
 };
 
 export const navbarStyles = {
-  // Main nav container
   nav: {
     base: "fixed left-4 right-4 top-6 z-50 transition-all duration-300",
     scrolled: "bg-black/85 backdrop-blur-sm shadow-xl rounded-3xl",
     notScrolled: "py-4 bg-black backdrop-blur-sm rounded-full"
   },
 
-  // Layout
-  container: "max-w-7xl mx-auto px-4 md:px-1 lg:px-1 xl:px-8 flex items-center justify-between",
-  
-  // Logo section
-  logoContainer: "flex items-center gap-3 z-20 flex-shrink-0 translate-x-[200px]",
-  logoIconContainer: "bg-black p-3 md:p-3 xl:p-3 lg:p-3 rounded-full border border-red-600 ",
-  logoIcon: "h-4 w-4 md:h-2 md:w-2 lg:h-4 lg:w-4 xl:w-4 xl:h-4  text-red-500",
-  logoText: "text-lg md:text-sm xl:text-lg lg:tex-lg font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-red-200 font-[pacifico]",
+  container:
+    "max-w-7xl mx-auto px-4 md:px-3 lg:px-1 xl:px-8 flex items-center justify-between",
 
-  // Desktop navigation
-  desktopNav: "hidden lg:flex absolute left-1/2 transform -translate-x-1/2 z-10 items-center bg-black/70 backdrop-blur-md rounded-full px-3 py-2 gap-2 shadow-inner",
+  // LOGO
+  logoContainer:
+    "flex items-center gap-4 z-20 flex-shrink-0 justify-center md:justify-start",
+  logoIconContainer: "bg-black p-3 rounded-full border border-red-600",
+  logoIcon: "h-4 w-4 text-red-500",
+  logoText:
+    "text-lg font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-red-200 font-[pacifico]",
+
+  // DESKTOP NAV
+  desktopNav:
+    "hidden lg:flex z-10 items-center bg-black/60 backdrop-blur-xl rounded-full px-4 py-3 gap-2 shadow-2xl mx-auto border border-white/10",
+
   desktopNavItems: "flex gap-2 items-center",
-  desktopNavItem: "relative group",
+  desktopNavItem: "relative",
+
+  // ✅ HOME STYLE = ACTIVE + HOVER (SAME)
   desktopNavLink: {
-    base: "nav-pill-btn flex items-center gap-3 px-5 py-3 rounded-full text-sm font-medium transition-all",
-    active: "active text-white",
-    inactive: "text-gray-300"
-  },
+  base: "nav-pill-btn flex items-center gap-3 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 relative",
+
+  active:
+    "bg-gradient-to-r from-red-900/80 to-black text-white shadow-lg",
+
+  inactive:
+    "text-gray-300 hover:bg-gradient-to-r hover:from-red-900/80 hover:to-black hover:text-white hover:shadow-lg"
+},
+
+
   desktopNavIcon: "h-5 w-5",
 
-  // Right section
-  rightSection: "flex items-center gap-4 z-20",
+  rightSection: "flex items-center gap-4 z-20 ml-auto h-full",
 
-  // Tablet navigation
-  tabletNav: "hidden md:flex lg:hidden items-center gap-2",
-  tabletNavLink: {
-    base: "nav-pill-btn flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all",
-    active: "active bg-red-900/30 text-white shadow-lg",
-    inactive: "text-gray-300 hover:bg-red-900/30"
-  },
-  tabletNavIcon: "h-4 w-4",
-  tabletNavText: "text-xs font-semibold",
-
-  // Auth section
+  // AUTH
   authSection: "flex items-center gap-2",
-  desktopAuth: "hidden md:block",
-  logoutButton: "flex items-center gap-2 md:px-1.5 px-4 lg:px-4 xl:px-4  py-2 rounded-full bg-gradient-to-r from-gray-700 to-gray-800 text-white text-sm font-semibold border border-red-600/20",
-  loginButton: "flex items-center gap-2 px-4 py-2 md:px-1.5 lg:px-4 xl:px-4 rounded-full bg-gradient-to-r from-red-300 to-red-700 text-white text-sm font-semibold border border-red-600/20",
+  desktopAuth: "hidden lg:block",
+
+  logoutButton:
+    "flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-gray-700 to-gray-800 text-white text-sm font-semibold border border-red-600/20",
+
+  loginButton:
+    "flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-red-400 to-red-600 text-white text-sm font-semibold shadow-lg hover:scale-[1.03] transition-all",
+
   authIcon: "h-4 w-4",
 
-  // Mobile menu
-  mobileMenuToggle: "md:hidden",
-  mobileMenuButton: "p-2 rounded-full bg-black/60 text-gray-200 hover:text-red-400",
+  // MOBILE MENU
+  mobileMenuToggle: "lg:hidden",
+  mobileMenuButton:
+    "p-2 rounded-full bg-black/60 text-gray-200 hover:text-red-400",
   mobileMenuIcon: "h-6 w-6",
-  mobileMenuPanel: "md:hidden absolute left-4 right-4 top-full mt-6 bg-black backdrop-blur-md rounded-2xl p-4 shadow-xl",
+
+  mobileMenuPanel:
+    "lg:hidden absolute left-4 right-4 top-full mt-6 bg-black backdrop-blur-md rounded-2xl p-4 shadow-xl",
+
   mobileMenuItems: "flex flex-col gap-2",
+
   mobileNavLink: {
-    base: "flex items-center gap-3 px-4 py-3 rounded-xl",
-    active: "bg-gradient-to-r from-red-600 to-red-500 text-white",
-    inactive: "text-gray-300 hover:bg-red-900/30"
+    base: "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300",
+    active: "bg-gradient-to-r from-red-900 to-black text-white shadow-lg",
+    inactive:
+      "text-gray-300 hover:bg-gradient-to-r hover:from-red-900 hover:to-black hover:text-white hover:shadow-lg"
   },
+
   mobileNavIcon: "h-5 w-5",
   mobileNavText: "font-medium",
 
-  // Mobile auth
   mobileAuthSection: "pt-2 border-t border-gray-800 mt-1",
-  mobileLogoutButton: "w-full mt-3 px-4 py-3 rounded-xl bg-gradient-to-r from-gray-700 to-gray-800 text-white flex items-center justify-center gap-2",
-  mobileLoginButton: "w-full mt-3 px-4 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-500 text-white flex items-center justify-center gap-2",
+
+  mobileLogoutButton:
+    "w-full mt-3 px-4 py-3 rounded-xl bg-gradient-to-r from-gray-700 to-gray-800 text-white flex items-center justify-center gap-2",
+
+  mobileLoginButton:
+    "w-full mt-3 px-4 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-500 text-white flex items-center justify-center gap-2",
+
   mobileAuthIcon: "h-5 w-5"
 };
 
