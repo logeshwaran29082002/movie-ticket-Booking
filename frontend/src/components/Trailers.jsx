@@ -288,11 +288,39 @@ function Trailers() {
                     </span>
                   </div>
                 </div>
+                <div className={trailersStyles.genreContainer}>
+                   {featuredTrailer.genre.split(",").map((genre,index)=>(
+                    <span key={index} className={trailersStyles.genreTag}>
+                      {genre.trim()}
+                    </span>
+                   ))}
+                </div>
+                <p className={trailersStyles.description}>
+                  {featuredTrailer.description}
+                </p>
+                <div className={trailersStyles.credits}>
+                  <h3 className={trailersStyles.creditsTitle}>
+                    Credits
+                  </h3>
+                  <div className={trailersStyles.creditsGrid}>
+                                {featuredTrailer.credits &&
+                      Object.entries(featuredTrailer.credits).map(([role, person]) => (
+                        <div key={role} className={trailersStyles.creditItem}>
+                          <div className={trailersStyles.creditImage}>
+                            <img src={person.image} alt={person.name} className={trailersStyles.creditImageSrc} loading="lazy" />
+                          </div>
+                          <div className={trailersStyles.creditName}>{person.name}</div>
+                          <div className={trailersStyles.creditRole}>{role}</div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </main>
+      <style>{trailersCSS}</style>
     </div>
   );
 }
