@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { trailersStyles, trailersCSS } from "../assets/dummyStyles";
 import { trailersData } from "../assets/trailerdata";
-import { ChevronLeft, ChevronRight, Clipboard } from "lucide-react"; // ✅ MISSING IMPORT FIXED
+import { Calendar, ChevronLeft, ChevronRight, Clipboard, Clock, Play, X } from "lucide-react"; // ✅ MISSING IMPORT FIXED
 
 function Trailers() {
   const [featuredTrailer, setFeaturedTrailer] = useState(trailersData[0]);
@@ -28,6 +28,89 @@ function Trailers() {
       carouselRef.current.scrollBy({ left: 280, behavior: "smooth" });
     }
   };
+
+  // this function helps to show to the selected trailer
+  const selectTrailer = (trailer) => {
+    setFeaturedTrailer(trailer);
+    setIsPlaying(false);
+    try {
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // center selected item in carousel
+    try {
+      if (carouselRef.current) {
+        const el = carouselRef.current.querySelector(
+          `[data-id='${trailer.id}']`
+        );
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const parentRect = carouselRef.current.getBoundingClientRect();
+          const offset =
+            rect.left - parentRect.left - parentRect.width / 2 + rect.width / 2;
+          carouselRef.current.scrollBy({ left: offset, behavior: "smooth" });
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
+  // helps in toggling the play
+  const togglePlay = () => {
+    setIsPlaying((s) => !s);
+  };
+
+  // helper to build embed URL for common providers (YouTube / youtu.be / Vimeo)
+  const getEmbedBaseUrl = (videoUrl) => {
+    if (!videoUrl) return "";
+    try {
+      const url = new URL(videoUrl);
+      const host = url.hostname.replace("www.", "").toLowerCase();
+
+      // YouTube standard watch URL: youtube.com/watch?v=ID
+      if (host.includes("youtube.com")) {
+        const vid = url.searchParams.get("v");
+        if (vid) return `https://www.youtube.com/embed/${vid}`;
+        // If already embed path, return that
+        if (url.pathname.includes("/embed/"))
+          return `https://www.youtube.com${url.pathname}`;
+      }
+
+      // short youtu.be links
+      if (host === "youtu.be") {
+        const vid = url.pathname.replace("/", "");
+        if (vid) return `https://www.youtube.com/embed/${vid}`;
+      }
+
+      // Vimeo
+      if (host.includes("vimeo.com")) {
+        // path like /12345678 or /channels/.../12345678
+        const parts = url.pathname.split("/").filter(Boolean);
+        const id = parts.pop();
+        if (id) return `https://player.vimeo.com/video/${id}`;
+      }
+
+      // fallback: return original (could already be an embed URL)
+      return videoUrl;
+    } catch (e) {
+      // if URL constructor fails, return as-is
+      return videoUrl || "";
+    }
+  }; //check the url and verify it for Youtube
+
+  // build final iframe src with autoplay/mute parameters
+  const buildIframeSrc = (videoUrl) => {
+    const base = getEmbedBaseUrl(videoUrl);
+    if (!base) return "";
+    const sep = base.includes("?") ? "&" : "?";
+    // add autoplay / mute / rel
+    return `${base}${sep}autoplay=1&mute=${isMuted ? 1 : 0}&rel=0`;
+  };
+  // helps to playing the  video
   return (
     <div className={trailersStyles.container}>
       <main className={trailersStyles.main}>
@@ -143,6 +226,68 @@ function Trailers() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+          {/* Right Side*/}
+          <div className={trailersStyles.rightSide}>
+            <div className={trailersStyles.rightCard}>
+              <div className={trailersStyles.videoContainer}>
+                {isPlaying ? (
+                  <div className={trailersStyles.videoWrapper}>
+                    <iframe
+                      className={trailersStyles.videoIframe}
+                      src={buildIframeSrc(featuredTrailer.videoUrl)}
+                      title={featuredTrailer.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      ref={videoRef}
+                    />
+                    <div className={trailersStyles.closeButton}>
+                      <button
+                        title="Close"
+                        onClick={() => {
+                          setIsPlaying(false);
+                        }}
+                        className={trailersStyles.closeButtonInner}
+                      >
+                        <X size={28} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={trailersStyles.thumbnailContainer}>
+                    <img
+                      src={featuredTrailer.thumbnail}
+                      alt={featuredTrailer.title}
+                      className={trailersStyles.thumbnailImage}
+                      loading="eager"
+                    />
+                    <div className={trailersStyles.playButtonContainer}>
+                      <button onClick={togglePlay} className={trailersStyles.playButton}>
+                        <Play size={32} fill="white"/>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className={trailersStyles.trailerInfo}>
+                <div className={trailersStyles.infoHeader}>
+                  <h2 className={trailersStyles.trailerTitle}>
+                    {featuredTrailer.title}
+                  </h2>
+                  <div className={trailersStyles.trailerMeta}>
+                    <span className={trailersStyles.metaItem}>
+                      <Clock size={16} className={trailersStyles.metaIcon}/>
+                      {featuredTrailer.duration}
+                    </span>
+                    <span className={trailersStyles.metaItem}>
+                         <Calendar size={16} className={trailersStyles.metaIcon}/>
+                      {featuredTrailer.year}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
