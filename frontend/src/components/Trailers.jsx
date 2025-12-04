@@ -125,7 +125,22 @@ function Trailers() {
                     key={trailer.id}
                     className={trailersStyles.trendingItem}
                   >
-                    <div className=""></div>
+                    <div className={trailersStyles.trendingImage}>
+                      <img
+                        src={trailer.thumbnail}
+                        alt={trailer.title}
+                        className={trailersStyles.trendingImageSrc}
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className={trailersStyles.trendingContent}>
+                      <h4 className={trailersStyles.trendingTitle}>
+                        {trailer.title}
+                      </h4>
+                      <p className={trailersStyles.trendingItemGenre}>
+                        {trailer.genre}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
