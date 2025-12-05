@@ -6,13 +6,14 @@ import {
   Ticket,
   Popcorn,
   Facebook,
-  Instagram,
   Twitter,
+  Instagram,
   Youtube,
   Mail,
   Phone,
   MapPin
 } from "lucide-react";
+
 import { footerStyles } from "../assets/dummyStyles";
 
 const Footer = () => {
@@ -23,53 +24,36 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const links = [
-    { label: "Home", href: "/" },
-    { label: "Movies", href: "/movies" },
-    { label: "Releases", href: "/releases" },
-    { label: "Contact", href: "/contact" },
-    { label: "Login", href: "/login" }
-  ];
-
-  const genreLinks = [
-    { label: "Horror", href: "/movies" },
-    { label: "Thriller", href: "/movies" },
-    { label: "Action", href: "/movies" },
-    { label: "Drama", href: "/movies" },
-    { label: "Comedy", href: "/movies" }
-  ];
-
+  const links = ["Home", "Movies", "Releases", "Contact", "Login"];
+  const genreLinks = ["Horror", "Thriller", "Action", "Drama", "Comedy"];
   const floatingIcons = [Clapperboard, Film, Star, Ticket, Popcorn];
 
   useEffect(() => {
-    const toggleVisibility = () => {
-      setIsVisible(window.pageYOffset > 300);
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
+    const toggle = () => setIsVisible(window.pageYOffset > 300);
+    window.addEventListener("scroll", toggle);
+    return () => window.removeEventListener("scroll", toggle);
   }, []);
 
   return (
     <footer className={footerStyles.footer}>
       <style>{footerStyles.customCSS}</style>
 
-      {/* FLOATING ICONS */}
+      {/* Floating Background Icons */}
       <div className={footerStyles.floatingIconsContainer}>
         {[...Array(12)].map((_, i) => {
-          const IconComponent = floatingIcons[i % floatingIcons.length];
+          const Icon = floatingIcons[i % floatingIcons.length];
           return (
             <div
               key={i}
               className={footerStyles.floatingIcon}
               style={{
-                left: `${(i * 23) % 100}%`,
-                top: `${(i * 17) % 100}%`,
-                animation: `float ${6 + (i % 5)}s infinite ease-in-out`,
-                animationDelay: `${(i % 4) * 0.6}s`
+                left: `${(i * 22) % 100}%`,
+                top: `${(i * 19) % 100}%`,
+                animation: `float ${6 + (i % 4)}s infinite ease-in-out`,
+                animationDelay: `${(i % 5) * 0.7}s`,
               }}
             >
-              <IconComponent className="w-8 h-8" />
+              <Icon className="w-8 h-8" />
             </div>
           );
         })}
@@ -77,49 +61,76 @@ const Footer = () => {
 
       {/* MAIN CONTENT */}
       <div className={footerStyles.mainContainer}>
-
-        {/* GRID CONTENT */}
         <div className={footerStyles.gridContainer}>
 
-          {/* Quick Links */}
+          {/* Brand Section */}
+          <div className={footerStyles.brandContainer}>
+            <div className={footerStyles.brandLogoContainer}>
+              <span className="relative">
+                <div className={footerStyles.logoGlow}></div>
+                <div className={footerStyles.logoContainer}>
+                  <Clapperboard className={footerStyles.logoIcon} />
+                </div>
+              </span>
+              <span className={`${footerStyles.brandTitle}`}>
+                Cine<span className={footerStyles.brandTitleWhite}>Verse</span>
+              </span>
+            </div>
+
+            <p className={footerStyles.brandDescription}>
+              Experience the dark side of cinema with the latest news, reviews,
+              and exclusive content.
+            </p>
+
+            <div className={footerStyles.socialContainer}>
+              {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
+                <a key={i} href="#" className={footerStyles.socialLink}>
+                  <Icon className={footerStyles.socialIcon} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Explore Links */}
           <div>
             <h3 className={footerStyles.sectionHeader}>
-              <div className={footerStyles.sectionDot} />
-              Quick Links
+              <span className={footerStyles.sectionDot}></span>
+              Explore
             </h3>
             <ul className={footerStyles.linksList}>
-              {links.map((item, index) => (
-                <li key={index} className={footerStyles.linkItem}>
+              {links.map((item, i) => (
+                <li key={i} className={footerStyles.linkItem}>
                   <span className={footerStyles.linkDot}></span>
-                  <a href={item.href}>{item.label}</a>
+                  {item}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Genre Links */}
+          {/* Genres */}
           <div>
             <h3 className={footerStyles.sectionHeader}>
-              <div className={footerStyles.sectionDot} />
+              <span className={footerStyles.sectionDot}></span>
               Genres
             </h3>
             <ul className={footerStyles.linksList}>
-              {genreLinks.map((g, index) => (
-                <li key={index} className={footerStyles.linkItem}>
+              {genreLinks.map((item, i) => (
+                <li key={i} className={footerStyles.linkItem}>
                   <span className={footerStyles.linkDot}></span>
-                  <a href={g.href}>{g.label}</a>
+                  {item}
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact */}
           <div>
             <h3 className={footerStyles.sectionHeader}>
-              <div className={footerStyles.sectionDot} />
+              <span className={footerStyles.sectionDot}></span>
               Contact Us
             </h3>
             <ul className={footerStyles.contactList}>
+
               <li className={footerStyles.contactItem}>
                 <div className={footerStyles.contactIconContainer}>
                   <Mail className={footerStyles.contactIcon} />
@@ -133,7 +144,9 @@ const Footer = () => {
                 <div className={footerStyles.contactIconContainer}>
                   <Phone className={footerStyles.contactIcon} />
                 </div>
-                <span className={footerStyles.contactText}>+91 8299431275</span>
+                <span className={footerStyles.contactText}>
+                  +91 8299431275
+                </span>
               </li>
 
               <li className={footerStyles.contactItem}>
@@ -144,23 +157,8 @@ const Footer = () => {
                   Lucknow, India
                 </span>
               </li>
+
             </ul>
-          </div>
-
-          {/* Social Icons */}
-          <div>
-            <h3 className={footerStyles.sectionHeader}>
-              <div className={footerStyles.sectionDot} />
-              Follow Us
-            </h3>
-
-            <div className={footerStyles.socialContainer}>
-              {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a key={i} className={footerStyles.socialLink} href="#">
-                  <Icon className={footerStyles.socialIcon} />
-                </a>
-              ))}
-            </div>
           </div>
 
         </div>
@@ -172,17 +170,20 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom Section */}
         <div className={footerStyles.bottomBar}>
-          <span className={footerStyles.designedByText}>
-            © {currentYear} CineNews. All rights reserved.
-          </span>
+          <div className={footerStyles.designedBy}>
+            <span className={footerStyles.designedByText}>Designed by</span>
+            <a href="#" className={footerStyles.designedByLink}>
+              Hexagon Digital Services
+            </a>
+          </div>
 
           <div className={footerStyles.policyLinks}>
             {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
-              (item, i) => (
+              (policy, i) => (
                 <a key={i} href="#" className={footerStyles.policyLink}>
-                  {item}
+                  {policy}
                 </a>
               )
             )}
@@ -191,7 +192,7 @@ const Footer = () => {
 
       </div>
 
-      {/* SCROLL TO TOP BUTTON */}
+      {/* Scroll to Top Button */}
       {isVisible && (
         <button className={footerStyles.scrollTopButton} onClick={scrollToTop}>
           ↑
