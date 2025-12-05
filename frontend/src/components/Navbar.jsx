@@ -52,42 +52,41 @@ function Navbar() {
         {/* DESKTOP NAV */}
         <div className={navbarStyles.desktopNav}>
           <div className={navbarStyles.desktopNavItems}>
-  {navItems.map((item) => {
-  const Icon = item.icon;
-  return (
-    <NavLink
-      key={item.id}
-      to={item.path}
-      end
-      className={({ isActive }) =>
-        `group relative ${navbarStyles.desktopNavLink.base} ${
-          isActive
-            ? navbarStyles.desktopNavLink.active
-            : navbarStyles.desktopNavLink.inactive
-        }`
-      }
-    >
-      <Icon className={navbarStyles.desktopNavIcon} />
-      <span>{item.label}</span>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.id}
+                  to={item.path}
+                  end
+                  className={({ isActive }) =>
+                    `group relative ${navbarStyles.desktopNavLink.base} ${
+                      isActive
+                        ? navbarStyles.desktopNavLink.active
+                        : navbarStyles.desktopNavLink.inactive
+                    }`
+                  }
+                >
+                  <Icon className={navbarStyles.desktopNavIcon} />
+                  <span>{item.label}</span>
 
-      {/* ✅ Active always visible, hover = left → right */}
-      <span
-        className={`
+                  {/* ✅ Active always visible, hover = left → right */}
+                  <span
+                    className={`
           absolute bottom-2 left-6 h-[2px] w-8 bg-red-500 rounded-full
           origin-left transition-transform duration-500 ease-out
           scale-x-0 group-hover:scale-x-100
         `}
-        style={{
-          transform:
-            window.location.pathname === item.path
-              ? "scaleX(1)"
-              : undefined,
-        }}
-      />
-    </NavLink>
-  );
-})}
-
+                    style={{
+                      transform:
+                        window.location.pathname === item.path
+                          ? "scaleX(1)"
+                          : undefined,
+                    }}
+                  />
+                </NavLink>
+              );
+            })}
           </div>
         </div>
 
@@ -129,29 +128,28 @@ function Navbar() {
         <div className={navbarStyles.mobileMenuPanel}>
           <div className={navbarStyles.mobileMenuItems}>
             {navItems.map((item) => {
-  const Icon = item.icon;
-  return (
-    <NavLink
-      key={item.id}
-      to={item.path}
-      end
-      onClick={() => setIsMenuOpen(false)}
-      className={({ isActive }) =>
-        `${navbarStyles.mobileNavLink.base} ${
-          isActive
-            ? navbarStyles.mobileNavLink.active
-            : navbarStyles.mobileNavLink.inactive
-        }`
-      }
-    >
-      <Icon className={navbarStyles.mobileNavIcon} />
-      <span className={navbarStyles.mobileNavText}>
-        {item.label}
-      </span>
-    </NavLink>
-  );
-})}
-
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.id}
+                  to={item.path}
+                  end
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `${navbarStyles.mobileNavLink.base} ${
+                      isActive
+                        ? navbarStyles.mobileNavLink.active
+                        : navbarStyles.mobileNavLink.inactive
+                    }`
+                  }
+                >
+                  <Icon className={navbarStyles.mobileNavIcon} />
+                  <span className={navbarStyles.mobileNavText}>
+                    {item.label}
+                  </span>
+                </NavLink>
+              );
+            })}
 
             <div className={navbarStyles.mobileAuthSection}>
               {isLoggedIn ? (
