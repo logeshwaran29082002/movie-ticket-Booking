@@ -21,7 +21,7 @@ export const trailersData = [
     year: "2012",
     description: "The epic conclusion to the Dark Knight trilogy. Bane forces Batman to return from exile.",
     thumbnail:LT1,
-    videoUrl: "https://www.youtube.com/watch?v=coOKvrsmQiI",
+    videoUrl: "https://youtu.be/yRCUwLNVWhE?si=amRyC99dp5wm_UBW",
     credits: {
       director: { name: "Brad Peyton", image: FMD1 },
       producer: { name: "Uwe Boll", image: FMP1 },
@@ -36,7 +36,7 @@ export const trailersData = [
     year: "2010",
     description: "A thief who steals corporate secrets through dream-sharing technology.",
     thumbnail: LT2,
-    videoUrl: "https://www.youtube.com/watch?v=PuzNA314WCI",
+    videoUrl: "https://youtu.be/qeVfT2iLiu0?si=ytOX-VjO_YaBVpda",
     credits: {
       director: { name: "Lokesh Kanagaraj", image: FMD1},
       producer: { name: "Kalanithi Maran", image: FMP1 },
