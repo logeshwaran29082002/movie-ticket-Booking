@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { loginStyles } from "../assets/dummyStyles";
 import { toast, ToastContainer } from "react-toastify";
-import { ArrowLeft, Film, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Film, Eye, EyeOff, Clapperboard, Popcorn } from "lucide-react";
 
 function LoginPage() {
   const [formData, setFormData] = useState({
@@ -35,6 +35,7 @@ function LoginPage() {
     if (!formData.password || formData.password.length < 6) {
       setIsLoading(false);
       toast.error("Password must be at least 6 characters long");
+      console.warn("Login Blocked");
       return;
     }
 
@@ -43,8 +44,22 @@ function LoginPage() {
     // simulate API request
     setTimeout(() => {
       setIsLoading(false);
-      toast.success("Login successful!");
-    }, 1000);
+      // Persist auth to localStorage so Navbar detects logged-in state
+      try {
+        const authObj = { isLoggedIn: true, email: formData.email };
+        localStorage.setItem("cine_auth", JSON.stringify(authObj));
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userEmail", formData.email || "");
+        localStorage.setItem("cine_user_email", formData.email || "");
+        console.log("Auth saved to localStorage:", authObj);
+      } catch (err) {
+        console.error("Failed to login:", err);
+      }
+      toast.success("Login successful! Redirecting to your cinima...");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    }, 1500);
   };
 
   const goBack = () => {
@@ -95,13 +110,16 @@ function LoginPage() {
                     className={loginStyles.input}
                     placeholder="Your Email Address"
                   />
+                  <div className={loginStyles.inputIcon}>
+                    <Clapperboard size={16} className="text-red-500" />
+                  </div>
                 </div>
               </div>
 
               {/* Password */}
               <div className={loginStyles.inputGroup}>
                 <label htmlFor="password" className={loginStyles.label}>
-                  Password
+                  password
                 </label>
                 <div className={loginStyles.inputContainer}>
                   <input
@@ -111,10 +129,9 @@ function LoginPage() {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className={loginStyles.input}
-                    placeholder="Your Password"
+                    className={loginStyles.inputWithIcon}
+                    placeholder="Enter Your Password"
                   />
-
                   {/* Show/Hide */}
                   <button
                     type="button"
@@ -127,19 +144,34 @@ function LoginPage() {
               </div>
 
               {/* Login Button */}
-              <div className={loginStyles.actions}>
-                <button
-                  type="submit"
-                  className={loginStyles.submitButton}
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Logging in..." : "Login"}
-                </button>
-              </div>
+             <button type="submit" disabled={isLoading} className={`${loginStyles.submitButton} ${
+              isLoading ? loginStyles.submitButtonDisabled:""
+             }`}>
+               {isLoading ? (
+                 <div className={loginStyles.buttonContent}>
+                  <div className={loginStyles.loadingSpinner}></div>
+                  <span className={loginStyles.buttonText}>SIGNING IN...</span>
+                 </div>
+               ):(
+                  <div className={loginStyles.buttonContent}>
+                  <Popcorn size={18} className={loginStyles.buttonIcon}/>
+                  <span className={loginStyles.buttonText}>ACCESS YOUR ACCOUNT</span>
+                 </div>
+               )}
+             </button>
             </form>
           </div>
         </div>
+        <div className={loginStyles.footerContainer}>
+          <p className={loginStyles.footerText}>
+            Don't have an account ?{""}
+            <a href="/signup" className={loginStyles.footerLink}>
+          create one now  
+           </a>
+          </p>
+        </div>
       </div>
+      <style>{loginStyles.customCSS}</style>
     </div>
   );
 }
