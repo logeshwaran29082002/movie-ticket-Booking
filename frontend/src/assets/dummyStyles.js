@@ -305,7 +305,7 @@ export const formatDuration = (mins) => {
 // Add to src/assets/dummyStyles.js
 export const contactStyles = {
   // Page container styles
-pageContainer: "min-h-screen pt-10 bg-black text-white px-4 sm:px-6 lg:px-8 relative overflow-hidden",
+  pageContainer: "min-h-screen pt-15 bg-black text-white py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden",
   
   // Background elements
   bgGradient: "absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-red-900/20 to-transparent",
@@ -325,20 +325,20 @@ pageContainer: "min-h-screen pt-10 bg-black text-white px-4 sm:px-6 lg:px-8 rela
   headerTitle: "text-4xl md:text-6xl font-bold",
   headerTitleRed: "text-red-400",
   headerTitleWhite: "text-white",
-  headerSubtitle: "text-xl text-gray-300 max-w-3xl mx-auto",
+  headerSubtitle: "text-xl text-gray-300 max-w-3xl mx-auto mt-4",
   
   // Grid layout
-  gridContainer: "grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4",
+  gridContainer: "grid grid-cols-1 lg:grid-cols-2 gap-8",
   
   // Card styles
   cardRelative: "relative",
-cardGradient:"absolute -inset-2 bg-gradient-to-r from-red-600 via-red-500 to-red-800 rounded-2xl blur-lg opacity-70",
+  cardGradient: "absolute -inset-2 bg-gradient-to-r from-red-600 to-red-800 rounded-2xl blur-md opacity-50",
   cardContainer: "relative bg-gray-800 rounded-2xl p-6 shadow-2xl border border-red-500/30",
-cardBadge:"absolute -top-4 left-6 bg-red-600 text-white px-5 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-red-600/50",
+  cardBadge: "absolute -top-3 left-6 bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold flex items-center",
   cardIcon: "h-4 w-4 mr-1",
   
   // Form styles
-formTitle:"text-xl md:text-2xl font-semibold text-red-400 tracking-wide",
+  formTitle: "text-2xl font-bold mb-6 font-[pacifico] text-red-400 flex items-center pt-2",
   formTitleIcon: "mr-3",
   form: "space-y-5",
   formGrid: "grid grid-cols-1 md:grid-cols-2 gap-5",
@@ -351,7 +351,7 @@ formTitle:"text-xl md:text-2xl font-semibold text-red-400 tracking-wide",
   
   // Button styles
   submitButton: "w-full bg-gradient-to-r from-red-600 to-red-800 text-white py-3 px-6 rounded-full font-bold flex items-center justify-center transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl cursor-pointer hover:to-red-900 group",
-buttonIcon:"ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1",
+  buttonIcon: "ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform",
   
   // Contact info styles
   contactInfo: "space-y-5",
