@@ -156,7 +156,7 @@ function News() {
                   <div className={newsStyles.sidebarContent}>
                     <div className="flex items-start gap-2">
                       <span className={newsStyles.sidebarCategory}>{item.category}</span>
-                    </div>
+                    </div>--
 
                     <h4 className={newsStyles.sidebarTitle} style={{ fontFamily: "Roboto, sans-serif" }}>{item.title}</h4>
                     <p className={newsStyles.sidebarExcerpt}>{item.excerpt}</p>
@@ -175,7 +175,7 @@ function News() {
                   placeholder="Email address"
                 />
                 <button className={newsStyles.subscribeButton}>
-                  Subscribe
+                  Subscribe--------
                 </button>
               </div>
             </div>

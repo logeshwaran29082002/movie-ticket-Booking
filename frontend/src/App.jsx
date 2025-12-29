@@ -5,6 +5,8 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Movie from './pages/Movie'
 import Release from './pages/Release'
+import Booking from './pages/Booking'
+import Contact from './pages/Contact'
 function App() {
   return (
     <>
@@ -14,6 +16,9 @@ function App() {
     <Route path='/signup' element={<Signup/>} />
     <Route path='/movies' element={<Movie/>} />
     <Route path='/releases' element={<Release/>} />
+    <Route path='/bookings' element={<Booking/>} />
+    <Route path='/contact' element={<Contact/>} />
+    
 
     </Routes>
     </>
