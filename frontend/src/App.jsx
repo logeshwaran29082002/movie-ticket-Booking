@@ -7,6 +7,7 @@ import Movie from './pages/Movie'
 import Release from './pages/Release'
 import Booking from './pages/Booking'
 import Contact from './pages/Contact'
+import MovieDetailPages from './pages/MovieDetailPages'
 function App() {
   return (
     <>
@@ -18,6 +19,7 @@ function App() {
     <Route path='/releases' element={<Release/>} />
     <Route path='/bookings' element={<Booking/>} />
     <Route path='/contact' element={<Contact/>} />
+    <Route path='/movies' element={<MovieDetailPages/>} />
     
 
     </Routes>
