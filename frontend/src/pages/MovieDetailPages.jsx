@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import {movieDetailStyles , movieDetailCSS} from '../assets/dummyStyles'
-import movies from '../assets/dummymdata'
-
+import { movieDetailStyles, movieDetailCSS } from "../assets/dummyStyles";
+import movies from "../assets/dummymdata";
+import { ArrowLeft, Calendar, Play, Star, X } from "lucide-react";
 
 const ROWS = [
   { id: "A", type: "standard", count: 8 },
@@ -80,7 +80,7 @@ const formatTimeInTZ = (dateLike, timeZone = "Asia/Kolkata") => {
   ).toUpperCase()}`;
 };
 function MovieDetailPages() {
-     const { id } = useParams();
+  const { id } = useParams();
   const movieId = Number(id);
   const movie = useMemo(() => movies.find((m) => m.id === movieId), [movieId]);
   const navigate = useNavigate();
@@ -92,13 +92,12 @@ function MovieDetailPages() {
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
 
-  useEffect(()=>{
-     if(!movie){
-        toast.error("Movie not found")
-     }
-  },[movie])
+  useEffect(() => {
+    if (!movie) {
+      toast.error("Movie not found");
+    }
+  }, [movie]);
 
-  
   /**
    * Build showtimeDays by grouping ONLY the dates present in movie.slots.
    *
@@ -202,22 +201,21 @@ function MovieDetailPages() {
 
     return days;
   }, [movie]);
-// Ensure selectedDay is valid when showtimeDays changes
- useEffect(()=>{
-    if(showtimeDays.length ===0){
-        setSelectedDay(0);
-        setSelectedTime(null);
-        return;
+  // Ensure selectedDay is valid when showtimeDays changes
+  useEffect(() => {
+    if (showtimeDays.length === 0) {
+      setSelectedDay(0);
+      setSelectedTime(null);
+      return;
     }
-    setSelectedDay((cur)=>{
-        const newIndex = cur >=0 && cur < showtimeDays.length ? cur : 0;
-        return newIndex;
+    setSelectedDay((cur) => {
+      const newIndex = cur >= 0 && cur < showtimeDays.length ? cur : 0;
+      return newIndex;
     });
     setSelectedTime(null);
+  }, [showtimeDays]);
 
- },[showtimeDays]);
-
-   // Trailer open/close handlers
+  // Trailer open/close handlers
   const openTrailer = (movieObj) => {
     const idFromField = movieObj?.trailerId ?? null;
     const id = idFromField || extractYouTubeId(movieObj?.trailer || "");
@@ -229,30 +227,30 @@ function MovieDetailPages() {
     setSelectedTrailerId(id);
     setShowTrailer(true);
   };
-   const closeTrailer = () => {
+  const closeTrailer = () => {
     setSelectedMovie(false);
     setSelectedTrailerId(null);
     setShowTrailer(null);
   };
 
-  if(!movie){
+  if (!movie) {
     return (
-        <div className={movieDetailStyles.notFoundContainer}>
-            <div className={movieDetailStyles.notFoundContent}>
-                <h2 className={movieDetailStyles.notFoundTitle}>Movie not found</h2>
-                <Link to="/movies" className={movieDetailStyles.notFoundLink}>
-                Back to Movie
-                </Link>
-            </div>
+      <div className={movieDetailStyles.notFoundContainer}>
+        <div className={movieDetailStyles.notFoundContent}>
+          <h2 className={movieDetailStyles.notFoundTitle}>Movie not found</h2>
+          <Link to="/movies" className={movieDetailStyles.notFoundLink}>
+            Back to Movie
+          </Link>
         </div>
-    )
+      </div>
+    );
   }
 
-  consthandleTimeSelect =  (datetime) =>{
+  const handleTimeSelect = (datetime) => {
     setSelectedTime(datetime);
     const key = encodeURIComponent(datetime);
     navigate(`/movies/${movie.id}/seat-selector/${key}`);
-  }
+  };
 
   const handleBookNow = () => {
     if (selectedTime) {
@@ -263,7 +261,7 @@ function MovieDetailPages() {
     }
   };
 
-   const getBookedCountFor = (datetime) => {
+  const getBookedCountFor = (datetime) => {
     try {
       const key = `bookings_${movie.id}_${datetime}`;
       const raw = localStorage.getItem(key);
@@ -275,10 +273,172 @@ function MovieDetailPages() {
     }
   };
   return (
-    <div>
-      
+    <div className={movieDetailStyles.container}>
+      {showTrailer &&
+        selectedTrailerId(
+          <div className={movieDetailStyles.modalOverlay}>
+            <div className={movieDetailStyles.modalContainer}>
+              <button
+                className={movieDetailStyles.closeButton}
+                onClick={closeTrailer}
+              >
+                <X size={36} />
+              </button>
+              <div className={movieDetailStyles.videoContainer}>
+                <iframe
+                  key={selectedTrailerId}
+                  width="100%"
+                  height="100%"
+                  src={getEmbedUrl(selectedTrailerId)}
+                  title={`${selectedMovie?.title || "Trailer"} Trailer`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className={movieDetailStyles.videoIframe}
+                />
+              </div>
+              ;
+            </div>
+          </div>
+        )}
+      <div className={movieDetailStyles.wrapper}>
+        <div className={movieDetailStyles.header}>
+          <Link to="/movies" className={movieDetailStyles.backButton}>
+            <ArrowLeft size={18} />
+            <span className={movieDetailStyles.backText}>Back</span>
+          </Link>
+        </div>
+        {/* Movie Title */}
+        <div className={movieDetailStyles.titleContainer}>
+          <h1
+            className={movieDetailStyles.movieTitle}
+            style={{
+              fontFamily: "'Cinzel', 'Times New Roman', serif",
+              textShadow: "0 4px 20px rgba(220, 38, 38, 0.6)",
+              letterSpacing: "0.08em",
+            }}
+          >
+            {movie.title}
+          </h1>
+          <div className={movieDetailStyles.movieMeta}>
+            <span className={movieDetailStyles.metaItem}>
+              <Star
+                className={`${movieDetailStyles.metaIcon} ${movieDetailStyles.ratingIcon}`}
+              />
+              {movie.rating} / 10
+            </span>
+            <span className={movieDetailStyles.metaItem}>
+              <Star
+                className={`${movieDetailStyles.durationIcon} ${movieDetailStyles.ratingIcon}`}
+              />
+              {movie.duration}
+            </span>
+            <span className={movieDetailStyles.genreTag}>{movie.genre}</span>
+          </div>
+        </div>
+
+        {/* Main Layout */}
+        <div className={movieDetailStyles.mainLayout}>
+          <div className={movieDetailStyles.leftColumn}>
+            <div className={movieDetailStyles.posterCard}>
+              <div
+                className={movieDetailStyles.posterImage}
+                style={{ maxWidth: "320px" }}
+              >
+                <img
+                  src={movie.image}
+                  alt={movie.title}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src =
+                      "https://via.placeholder.com/320x480?text=No+Image";
+                  }}
+                  className={movieDetailStyles.posterImg}
+                />
+              </div>
+              {/* Watch Trailer Button */}
+              <button
+                onClick={() => openTrailer()}
+                className={movieDetailStyles.trailerButton}
+              >
+                <Play size={18} />
+                <span>Watch Trailer</span>
+              </button>
+            </div>
+          </div>
+          <div className={movieDetailStyles.rightColumns}>
+            <div className={movieDetailStyles.showtimesCard}>
+              <h3
+                className={movieDetailStyles.showtimesTitle}
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                <Calendar className={movieDetailStyles.showtimesIcon} />
+                <span>Showtimes</span>
+              </h3>
+              <div className={movieDetailStyles.daySelection}>
+                {showtimeDays.map((day, index) => (
+                  <button
+                    key={day.date}
+                    onClick={() => {
+                      setSelectedDay(index);
+                      setSelectedTime(null);
+                    }}
+                    className={`${movieDetailStyles.dayButton.base} ${
+                      selectedDay === index
+                        ? movieDetailStyles.dayButton.active
+                        : movieDetailStyles.dayButton.inactive
+                    }`}
+                  >
+                    <div className={movieDetailStyles.dayName}>
+                      {day.shortDay}
+                    </div>
+                  <div className={movieDetailStyles.dayDate}>
+                    {day.dateStr}
+                  </div>
+                  </button>
+                ))}
+              </div>
+
+
+{/* Showtimes Grid - responsive columns */}
+    <div className={movieDetailStyles.showtimesGrid}>
+      {showtimeDays[selectedDay]?.showtimes.map((showtime, index) => {
+        const bookedCount = getBookedCountFor(showtime.datetime);
+        const isSoldOut = bookedCount >= TOTAL_SEATS;
+
+        return (
+          <button
+            key={index}
+            onClick={() => handleTimeSelect(showtime.datetime)}
+            className={`${movieDetailStyles.timeButton.base} ${
+              selectedTime === showtime.datetime
+                ? movieDetailStyles.timeButton.active
+                : movieDetailStyles.timeButton.inactive
+            }`}
+            title={
+              isSoldOut
+                ? "All seats booked for this showtime"
+                : `Seats available: ${Math.max(0, TOTAL_SEATS - bookedCount)}`
+            }
+            aria-disabled={isSoldOut}
+          >
+            <span>{showtime.time}</span>
+            {isSoldOut && (
+              <span className={movieDetailStyles.soldOutBadge}>Sold Out</span>
+            )}
+          </button>
+        );
+      })}
     </div>
-  )
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default MovieDetailPages
+export default MovieDetailPages;
