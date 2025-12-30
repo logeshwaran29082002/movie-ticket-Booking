@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { movieDetailStyles, movieDetailCSS } from "../assets/dummyStyles";
 import movies from "../assets/dummymdata";
-import { ArrowLeft, Calendar, Play, Star, X } from "lucide-react";
+import { ArrowLeft, Calendar, Play, Star, User, X } from "lucide-react";
 
 const ROWS = [
   { id: "A", type: "standard", count: 8 },
@@ -392,50 +392,115 @@ function MovieDetailPages() {
                     <div className={movieDetailStyles.dayName}>
                       {day.shortDay}
                     </div>
-                  <div className={movieDetailStyles.dayDate}>
-                    {day.dateStr}
-                  </div>
+                    <div className={movieDetailStyles.dayDate}>
+                      {day.dateStr}
+                    </div>
                   </button>
                 ))}
               </div>
 
+              {/* Showtimes Grid - responsive columns */}
+              <div className={movieDetailStyles.showtimesGrid}>
+                {showtimeDays[selectedDay]?.showtimes.map((showtime, index) => {
+                  const bookedCount = getBookedCountFor(showtime.datetime);
+                  const isSoldOut = bookedCount >= TOTAL_SEATS;
 
-{/* Showtimes Grid - responsive columns */}
-    <div className={movieDetailStyles.showtimesGrid}>
-      {showtimeDays[selectedDay]?.showtimes.map((showtime, index) => {
-        const bookedCount = getBookedCountFor(showtime.datetime);
-        const isSoldOut = bookedCount >= TOTAL_SEATS;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => handleTimeSelect(showtime.datetime)}
+                      className={`${movieDetailStyles.timeButton.base} ${
+                        selectedTime === showtime.datetime
+                          ? movieDetailStyles.timeButton.active
+                          : movieDetailStyles.timeButton.inactive
+                      }`}
+                      title={
+                        isSoldOut
+                          ? "All seats booked for this showtime"
+                          : `Seats available: ${Math.max(
+                              0,
+                              TOTAL_SEATS - bookedCount
+                            )}`
+                      }
+                      aria-disabled={isSoldOut}
+                    >
+                      <span>{showtime.time}</span>
+                      {isSoldOut && (
+                        <span className={movieDetailStyles.soldOutBadge}>
+                          Sold Out
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedTime && (
+                <div className={movieDetailStyles.proceedButton}>
+                  <button
+                    onClick={handleBookNow}
+                    className={movieDetailStyles.bookButton}
+                  >
+                    Proceed to seat Selection
+                  </button>
+                </div>
+              )}
+            </div>
+            {/* CAST SECTION */}
+            <div className={movieDetailStyles.castCard}>
+              <h3
+                className={movieDetailStyles.castTitle}
+                style={{ fontFamily: "'Cinzel' , serif" }}
+              >
+                <User className={movieDetailStyles.castIcon} />
+                <span>Cast</span>
+              </h3>
 
-        return (
-          <button
-            key={index}
-            onClick={() => handleTimeSelect(showtime.datetime)}
-            className={`${movieDetailStyles.timeButton.base} ${
-              selectedTime === showtime.datetime
-                ? movieDetailStyles.timeButton.active
-                : movieDetailStyles.timeButton.inactive
-            }`}
-            title={
-              isSoldOut
-                ? "All seats booked for this showtime"
-                : `Seats available: ${Math.max(0, TOTAL_SEATS - bookedCount)}`
-            }
-            aria-disabled={isSoldOut}
-          >
-            <span>{showtime.time}</span>
-            {isSoldOut && (
-              <span className={movieDetailStyles.soldOutBadge}>Sold Out</span>
-            )}
-          </button>
-        );
-      })}
-    </div>
-
-
-
+              <div className={movieDetailStyles.castGrid}>
+                {movie.cast && movie.cast.length ? (
+                  movie.cast.map((c, idx) => {
+                    return (
+                      <div className={movieDetailStyles.castItem} key={idx}>
+                        <div className={movieDetailStyles.castImageContainer}>
+                          {c.img ? (
+                            <img
+                              src={c.img}
+                              alt={c.name}
+                              className={movieDetailStyles.castImage}
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src =
+                                  "https://via.placeholder.com/80?text=A";
+                              }}
+                            />
+                          ) : (
+                            <FallbackAvatar className="w-20 h-20 mx-auto" />
+                          )}
+                        </div>
+                        <div className={movieDetailStyles.castName}>
+                          {c.name}
+                        </div>
+                        <div className={movieDetailStyles.castRole}>
+                          {c.role}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className={movieDetailStyles.noCast}>
+                    No Cast data available
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
+        {/* STORY SECTION */}
+        <div className={movieDetailStyles.storyCard}>
+          <h2 className={movieDetailStyles.storyTitle} style={{fontFamily:"'Cinzel', serif"}}>Story</h2>
+          <p className={movieDetailStyles.storyText}>{movie.synopsis}</p>
+
+        </div>
+
       </div>
     </div>
   );
