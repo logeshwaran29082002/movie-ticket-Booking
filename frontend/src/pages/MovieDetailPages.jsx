@@ -3,6 +3,9 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { movieDetailStyles, movieDetailCSS } from "../assets/dummyStyles";
 import movies from "../assets/dummymdata";
 import { ArrowLeft, Calendar, Play, Star, User, X } from "lucide-react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const ROWS = [
   { id: "A", type: "standard", count: 8 },
@@ -92,11 +95,13 @@ function MovieDetailPages() {
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
 
+
   useEffect(() => {
-    if (!movie) {
-      toast.error("Movie not found");
-    }
-  }, [movie]);
+  if (!movie) {
+    toast.error("Movie not found");
+  }
+}, [movie]);
+
 
   /**
    * Build showtimeDays by grouping ONLY the dates present in movie.slots.
@@ -275,14 +280,14 @@ function MovieDetailPages() {
   return (
     <div className={movieDetailStyles.container}>
       {showTrailer &&
-        selectedTrailerId(
+        selectedTrailerId &&(
           <div className={movieDetailStyles.modalOverlay}>
             <div className={movieDetailStyles.modalContainer}>
               <button
                 className={movieDetailStyles.closeButton}
                 onClick={closeTrailer}
               >
-                <X size={36} />
+                <X size={66} />
               </button>
               <div className={movieDetailStyles.videoContainer}>
                 <iframe
@@ -357,13 +362,14 @@ function MovieDetailPages() {
                 />
               </div>
               {/* Watch Trailer Button */}
-              <button
-                onClick={() => openTrailer()}
-                className={movieDetailStyles.trailerButton}
-              >
-                <Play size={18} />
-                <span>Watch Trailer</span>
-              </button>
+             <button
+  onClick={() => openTrailer(movie)}
+  className={movieDetailStyles.trailerButton}
+>
+  <Play size={18} />
+  <span>Watch Trailer</span>
+</button>
+
             </div>
           </div>
           <div className={movieDetailStyles.rightColumns}>
@@ -496,11 +502,109 @@ function MovieDetailPages() {
         </div>
         {/* STORY SECTION */}
         <div className={movieDetailStyles.storyCard}>
-          <h2 className={movieDetailStyles.storyTitle} style={{fontFamily:"'Cinzel', serif"}}>Story</h2>
+          <h2
+            className={movieDetailStyles.storyTitle}
+            style={{ fontFamily: "'Cinzel', serif" }}
+          >
+            Story
+          </h2>
           <p className={movieDetailStyles.storyText}>{movie.synopsis}</p>
-
         </div>
 
+        {/*Director & Producer section */}
+        <div className={movieDetailStyles.crewGrid}>
+          {/* Director */}
+          <div className={movieDetailStyles.crewCard}>
+            <div className={movieDetailStyles.crewHeader}>
+              <User className={movieDetailStyles.crewIcon} />
+              <h3
+                className={movieDetailStyles.crewTitle}
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                Director
+              </h3>
+            </div>
+            <div className={movieDetailStyles.crewContent}>
+              {(() => {
+                const directors = Array.isArray(movie.director)
+                  ? movie.director
+                  : movie.director
+                  ? [movie.director]
+                  : [];
+
+                return (
+                  <div className={movieDetailStyles.crewImageGrid}>
+                    {directors.length ? (
+                      directors.slice(0, 2).map((d, i) => (
+                        <div key={i} className="flex flex-col items-center">
+                          {d?.img ? (
+                            <img
+                              src={d.img}
+                              alt={d.name || `Director ${i + 1}`}
+                              className={movieDetailStyles.crewImage}
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src =
+                                  "https://via.placeholder.com/96?text=D";
+                              }}
+                            />
+                          ) : (
+                            <div className={movieDetailStyles.fallbackAvatar}>
+                              ?
+                            </div>
+                          )}
+                          <div className={movieDetailStyles.crewName}>
+                            {d?.name ?? "N/A"}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <div className={movieDetailStyles.fallbackAvatar}>
+                          ?
+                        </div>
+                        <div className={movieDetailStyles.crewName}>N/A</div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* Producer */}
+          <div className={movieDetailStyles.crewCard}>
+            <div className={movieDetailStyles.crewHeader}>
+              <User className={movieDetailStyles.crewIcon} />
+              <h3
+                className={movieDetailStyles.crewTitle}
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                Producer
+              </h3>
+            </div>
+            <div className={movieDetailStyles.crewContent}>
+              {movie.producer?.img ? (
+                <img
+                  src={movie.producer.img}
+                  alt={movie.producer.name}
+                  className={movieDetailStyles.crewImage}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src =
+                      "https://via.placeholder.com/96?text=P";
+                  }}
+                />
+              ) : (
+                <FallbackAvatar className="w-20 h-20 sm:w-24 sm:h-24 mb-3 sm:mb-4" />
+              )}
+              <div className={movieDetailStyles.crewName}>
+                {movie.producer?.name ?? "N/A"}
+              </div>
+            </div>
+          </div>
+        </div>
+        <style jsx>{movieDetailCSS}</style>
       </div>
     </div>
   );
