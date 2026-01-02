@@ -6,7 +6,6 @@ import { ArrowLeft, Calendar, Play, Star, User, X } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const ROWS = [
   { id: "A", type: "standard", count: 8 },
   { id: "B", type: "standard", count: 8 },
@@ -95,13 +94,11 @@ function MovieDetailPages() {
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
 
-
   useEffect(() => {
-  if (!movie) {
-    toast.error("Movie not found");
-  }
-}, [movie]);
-
+    if (!movie) {
+      toast.error("Movie not found");
+    }
+  }, [movie]);
 
   /**
    * Build showtimeDays by grouping ONLY the dates present in movie.slots.
@@ -279,33 +276,32 @@ function MovieDetailPages() {
   };
   return (
     <div className={movieDetailStyles.container}>
-      {showTrailer &&
-        selectedTrailerId &&(
-          <div className={movieDetailStyles.modalOverlay}>
-            <div className={movieDetailStyles.modalContainer}>
-              <button
-                className={movieDetailStyles.closeButton}
-                onClick={closeTrailer}
-              >
-                <X size={66} />
-              </button>
-              <div className={movieDetailStyles.videoContainer}>
-                <iframe
-                  key={selectedTrailerId}
-                  width="100%"
-                  height="100%"
-                  src={getEmbedUrl(selectedTrailerId)}
-                  title={`${selectedMovie?.title || "Trailer"} Trailer`}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className={movieDetailStyles.videoIframe}
-                />
-              </div>
-              ;
+      {showTrailer && selectedTrailerId && (
+        <div className={movieDetailStyles.modalOverlay}>
+          <div className={movieDetailStyles.modalContainer}>
+            <button
+              className={movieDetailStyles.closeButton}
+              onClick={closeTrailer}
+            >
+              <X size={66} />
+            </button>
+            <div className={movieDetailStyles.videoContainer}>
+              <iframe
+                key={selectedTrailerId}
+                width="100%"
+                height="100%"
+                src={getEmbedUrl(selectedTrailerId)}
+                title={`${selectedMovie?.title || "Trailer"} Trailer`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className={movieDetailStyles.videoIframe}
+              />
             </div>
+            ;
           </div>
-        )}
+        </div>
+      )}
       <div className={movieDetailStyles.wrapper}>
         <div className={movieDetailStyles.header}>
           <Link to="/movies" className={movieDetailStyles.backButton}>
@@ -362,14 +358,13 @@ function MovieDetailPages() {
                 />
               </div>
               {/* Watch Trailer Button */}
-             <button
-  onClick={() => openTrailer(movie)}
-  className={movieDetailStyles.trailerButton}
->
-  <Play size={18} />
-  <span>Watch Trailer</span>
-</button>
-
+              <button
+                onClick={() => openTrailer(movie)}
+                className={movieDetailStyles.trailerButton}
+              >
+                <Play size={18} />
+                <span>Watch Trailer</span>
+              </button>
             </div>
           </div>
           <div className={movieDetailStyles.rightColumns}>

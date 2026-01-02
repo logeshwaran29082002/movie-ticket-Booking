@@ -77,7 +77,7 @@ function MoviePage() {
             ))}
             {filteredMovies.length === 0 && (
                 <div className={moviesPageStyles.emptyState}>
-                    No movies found in this category.
+                    No Movies Found In This Category.
                 </div>
             )}
           </div>

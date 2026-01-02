@@ -278,7 +278,7 @@ Message: ${formData.message}
                 </p>
                 <div className="flex items-center">
                   <div className={contactStyles.emergencyHotline}>
-                    HOTLINE: +91 8299431275
+                    HOTLINE: +91 8056397525
                   </div>
                   <span className={contactStyles.emergencyNote}>
                     Available during showtimes

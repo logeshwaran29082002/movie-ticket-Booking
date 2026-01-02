@@ -765,7 +765,8 @@ export const releasesStyles = {
 // Add to src/assets/dummyStyles.js
 export const seatSelectorStyles = {
   // Page container
-  pageContainer: "min-h-screen bg-gradient-to-b from-black to-gray-900 text-white py-8 px-4",
+pageContainer: 
+"min-h-screen bg-gradient-to-b from-black to-gray-900 text-white py-8 px-4 pt-28",
   
   // Main container
   mainContainer: "max-w-6xl mx-auto",

@@ -9,6 +9,7 @@ import Booking from './pages/Booking'
 import Contact from './pages/Contact'
 import MovieDetailPages from './pages/MovieDetailPages'
 import MovieDetailsPageHome from './pages/MovieDetailsPageHome'
+import SeatSelectors from './pages/SeatSelectors'
 function App() {
   return (
     <>
@@ -25,6 +26,8 @@ function App() {
  <Route path="/movies/:id" element={<MovieDetailPages />} />
 <Route path="/movie-home/:id" element={<MovieDetailsPageHome />} />
 
+<Route path="/movies/:id/seat/:slot" element={<SeatSelectors />} />
+<Route path="/movies/:id/seat-selector/:slot" element={<SeatSelectors />} />
 
     </Routes>
     </>

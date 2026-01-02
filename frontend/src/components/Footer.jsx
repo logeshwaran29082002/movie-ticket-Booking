@@ -136,7 +136,7 @@ const Footer = () => {
                   <Mail className={footerStyles.contactIcon} />
                 </div>
                 <span className={footerStyles.contactText}>
-                  contact@hexagonsservices.com
+                  contact@lrtechservices.com
                 </span>
               </li>
 

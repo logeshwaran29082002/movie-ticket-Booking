@@ -52,7 +52,6 @@ function News() {
       {/* ---------------- MAIN CONTENT ---------------- */}
       <main className={newsStyles.main}>
         <section className={newsStyles.grid}>
-
           {/* Hero Card */}
           <article className={newsStyles.heroCard}>
             <div className={newsStyles.heroImageContainer}>
@@ -104,7 +103,6 @@ function News() {
             {/* -------- MINI ARTICLE STRIP (FIXED) -------- */}
             <div className={newsStyles.heroStrip}>
               <div className={newsStyles.stripGrid}>
-
                 {sampleNews.slice(1, 4).map((item) => (
                   <article key={item.id} className={newsStyles.articleCard}>
                     <div className={newsStyles.articleImage}>
@@ -137,28 +135,36 @@ function News() {
                     <div className={newsStyles.articleSpacer}></div>
                   </article>
                 ))}
-
               </div>
             </div>
           </article>
-            {/* Right column: animated card stack */}
+          {/* Right column: animated card stack */}
           <aside className={newsStyles.sidebar}>
             {sampleNews.slice(4, 7).map((item) => (
-              <div
-                key={item.id}
-                className={newsStyles.sidebarCard}
-              >
+              <div key={item.id} className={newsStyles.sidebarCard}>
                 <div className={newsStyles.sidebarCardInner}>
                   <div className={newsStyles.sidebarImage}>
-                    <img src={item.image} alt={item.title} className={newsStyles.sidebarImg} loading="lazy" />
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className={newsStyles.sidebarImg}
+                      loading="lazy"
+                    />
                   </div>
 
                   <div className={newsStyles.sidebarContent}>
                     <div className="flex items-start gap-2">
-                      <span className={newsStyles.sidebarCategory}>{item.category}</span>
-                    </div>--
-
-                    <h4 className={newsStyles.sidebarTitle} style={{ fontFamily: "Roboto, sans-serif" }}>{item.title}</h4>
+                      <span className={newsStyles.sidebarCategory}>
+                        {item.category}
+                      </span>
+                    </div>
+                    --
+                    <h4
+                      className={newsStyles.sidebarTitle}
+                      style={{ fontFamily: "Roboto, sans-serif" }}
+                    >
+                      {item.title}
+                    </h4>
                     <p className={newsStyles.sidebarExcerpt}>{item.excerpt}</p>
                   </div>
                 </div>
@@ -167,8 +173,16 @@ function News() {
 
             {/* CTA / Subscribe card */}
             <div className={newsStyles.subscribeCard}>
-              <h5 className={newsStyles.subscribeTitle} style={{ fontFamily: "Roboto, sans-serif" }}>Join CineNews</h5>
-              <p className={newsStyles.subscribeText}>Get curated cinematic news, exclusive behind-the-scenes, and early access to trailers.</p>
+              <h5
+                className={newsStyles.subscribeTitle}
+                style={{ fontFamily: "Roboto, sans-serif" }}
+              >
+                Join CineNews
+              </h5>
+              <p className={newsStyles.subscribeText}>
+                Get curated cinematic news, exclusive behind-the-scenes, and
+                early access to trailers.
+              </p>
               <div className={newsStyles.subscribeForm}>
                 <input
                   className={newsStyles.subscribeInput}

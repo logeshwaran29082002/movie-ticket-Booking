@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { trailersStyles, trailersCSS } from "../assets/dummyStyles";
 import { trailersData } from "../assets/trailerdata";
-import { Calendar, ChevronLeft, ChevronRight, Clipboard, Clock, Play, X } from "lucide-react"; // ✅ MISSING IMPORT FIXED
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Clipboard,
+  Clock,
+  Play,
+  X,
+} from "lucide-react"; // ✅ MISSING IMPORT FIXED
 
 function Trailers() {
   const [featuredTrailer, setFeaturedTrailer] = useState(trailersData[0]);
@@ -265,8 +273,11 @@ function Trailers() {
                       loading="eager"
                     />
                     <div className={trailersStyles.playButtonContainer}>
-                      <button onClick={togglePlay} className={trailersStyles.playButton}>
-                        <Play size={32} fill="white"/>
+                      <button
+                        onClick={togglePlay}
+                        className={trailersStyles.playButton}
+                      >
+                        <Play size={32} fill="white" />
                       </button>
                     </div>
                   </div>
@@ -279,40 +290,49 @@ function Trailers() {
                   </h2>
                   <div className={trailersStyles.trailerMeta}>
                     <span className={trailersStyles.metaItem}>
-                      <Clock size={16} className={trailersStyles.metaIcon}/>
+                      <Clock size={16} className={trailersStyles.metaIcon} />
                       {featuredTrailer.duration}
                     </span>
                     <span className={trailersStyles.metaItem}>
-                         <Calendar size={16} className={trailersStyles.metaIcon}/>
+                      <Calendar size={16} className={trailersStyles.metaIcon} />
                       {featuredTrailer.year}
                     </span>
                   </div>
                 </div>
                 <div className={trailersStyles.genreContainer}>
-                   {featuredTrailer.genre.split(",").map((genre,index)=>(
+                  {featuredTrailer.genre.split(",").map((genre, index) => (
                     <span key={index} className={trailersStyles.genreTag}>
                       {genre.trim()}
                     </span>
-                   ))}
+                  ))}
                 </div>
                 <p className={trailersStyles.description}>
                   {featuredTrailer.description}
                 </p>
                 <div className={trailersStyles.credits}>
-                  <h3 className={trailersStyles.creditsTitle}>
-                    Credits
-                  </h3>
+                  <h3 className={trailersStyles.creditsTitle}>Credits</h3>
                   <div className={trailersStyles.creditsGrid}>
-                                {featuredTrailer.credits &&
-                      Object.entries(featuredTrailer.credits).map(([role, person]) => (
-                        <div key={role} className={trailersStyles.creditItem}>
-                          <div className={trailersStyles.creditImage}>
-                            <img src={person.image} alt={person.name} className={trailersStyles.creditImageSrc} loading="lazy" />
+                    {featuredTrailer.credits &&
+                      Object.entries(featuredTrailer.credits).map(
+                        ([role, person]) => (
+                          <div key={role} className={trailersStyles.creditItem}>
+                            <div className={trailersStyles.creditImage}>
+                              <img
+                                src={person.image}
+                                alt={person.name}
+                                className={trailersStyles.creditImageSrc}
+                                loading="lazy"
+                              />
+                            </div>
+                            <div className={trailersStyles.creditName}>
+                              {person.name}
+                            </div>
+                            <div className={trailersStyles.creditRole}>
+                              {role}
+                            </div>
                           </div>
-                          <div className={trailersStyles.creditName}>{person.name}</div>
-                          <div className={trailersStyles.creditRole}>{role}</div>
-                        </div>
-                      ))}
+                        )
+                      )}
                   </div>
                 </div>
               </div>

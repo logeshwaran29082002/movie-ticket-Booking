@@ -119,7 +119,7 @@ function LoginPage() {
               {/* Password */}
               <div className={loginStyles.inputGroup}>
                 <label htmlFor="password" className={loginStyles.label}>
-                  password
+                  Password
                 </label>
                 <div className={loginStyles.inputContainer}>
                   <input

@@ -98,11 +98,11 @@ function Navbar() {
           >
             {isLoggedIn ? (
               <button className={navbarStyles.logoutButton}>
-                <LogOut className={navbarStyles.authIcon} /> Logout
+                <LogOut className={navbarStyles.authIcon} /> Log out
               </button>
             ) : (
               <button className={navbarStyles.loginButton}>
-                <LogIn className={navbarStyles.authIcon} /> Login
+                <LogIn className={navbarStyles.authIcon} /> Log in
               </button>
             )}
           </div>

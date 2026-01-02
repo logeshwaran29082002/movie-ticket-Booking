@@ -1,16 +1,16 @@
-import React from 'react'
-import ReleasePage from '../components/ReleasePage'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
+import React from "react";
+import ReleasePage from "../components/ReleasePage";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 function Release() {
   return (
     <div>
-      <Navbar /> 
-      <ReleasePage/>
-      <Footer/>
+      <Navbar />
+      <ReleasePage />
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default Release
+export default Release;

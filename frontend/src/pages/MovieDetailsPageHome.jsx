@@ -465,7 +465,7 @@ function MovieDetailsPageHome() {
                   })
                 ) : (
                   <div className={movieDetailHStyles.noShowtimes}>
-                    No showtimes available for the selected date
+                    No showtimes available for the selected date.
                   </div>
                 )}
               </div>
