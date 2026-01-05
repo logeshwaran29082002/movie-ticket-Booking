@@ -599,7 +599,7 @@ function MovieDetailPages() {
             </div>
           </div>
         </div>
-        <style jsx>{movieDetailCSS}</style>
+        <style>{movieDetailCSS}</style>
       </div>
     </div>
   );

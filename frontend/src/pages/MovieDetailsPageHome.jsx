@@ -223,31 +223,29 @@ function MovieDetailsPageHome() {
     );
   }
   // Seat selector path
-  const buildSeatSelectorPath = (movieId, datetime) => {
-    const key = encodeURIComponent(datetime);
-    const pathLower = (location.pathname || "").toLowerCase();
-    const userSingular = pathLower.includes("/movie/");
+ const buildSeatSelectorPath = (movieId, datetime) => {
+  const encodedSlot = encodeURIComponent(datetime);
+  return `/movie/${movieId}/seat-selector/${encodedSlot}`;
+};
 
-    if (userSingular) {
-      return `/movie/${movieIdParam}/seat-selector/${key}`;
-    }
-    return `/movies/${movieIdParam}/seat-selector/${key}`;
-  };
 
-  const handleTimeSelect = (datetime) => {
-    setSelectedTime(datetime);
-    const key = buildSeatSelectorPath(movie.id, datetime);
-    navigate(path);
-  };
+ const handleTimeSelect = (datetime) => {
+  setSelectedTime(datetime);
+  const path = buildSeatSelectorPath(movie.id, datetime);
+  navigate(path);
+};
 
-  const handleBookNow = () => {
-    if (selectedTime) {
-      const key = buildSeatSelectorPath(selectedTime);
-      navigate(path);
-    } else {
-      toast.error("Please select a showtime first");
-    }
-  };
+
+const handleBookNow = () => {
+  if (!selectedTime) {
+    toast.error("Please select a showtime first");
+    return;
+  }
+
+  const path = buildSeatSelectorPath(movie.id, selectedTime);
+  navigate(path);
+};
+
 
   /**
    * Get booked count for specific datetime and audi (if available).
@@ -470,17 +468,7 @@ function MovieDetailsPageHome() {
                 )}
               </div>
 
-              {selectedTime && (
-                <div className={movieDetailHStyles.bookNowContainer}>
-                  <button
-                    onClick={handleBookNow}
-                    className={movieDetailHStyles.bookNowButton}
-                    aria-label="Proceed to seat selection"
-                  >
-                    Proceed to Seat Selection
-                  </button>
-                </div>
-              )}
+           
             </div>
 
             {/* Cast */}
