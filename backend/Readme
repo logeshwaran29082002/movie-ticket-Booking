@@ -1,0 +1,14 @@
+
+step-1
+npm install
+
+step-2
+ to create a .env file
+
+ step-3
+ To connect the mongoDb connection string  inside the .env file
+
+To create a port in .env file and then
+
+to create a     
+SECRET_KEY
