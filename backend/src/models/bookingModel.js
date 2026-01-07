@@ -75,5 +75,5 @@ bookingSchema.index({
     auditorium:1
 });
 
-const booking = mongoose.model.Booking || mongoose.model('Booking', bookingSchema);
-module.exports = booking;
+const Booking = mongoose.model.Booking || mongoose.model('Booking', bookingSchema);
+module.exports = Booking;
