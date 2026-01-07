@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes')
 const connectDB = require("./config/db");
-
+const movieRouter = require("./routes/movieRoutes");
+const path = require("path");
 require("dotenv").config();
 
 // Connect to MongoDB
@@ -16,11 +17,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 
 // Health check route
-app.get("/auth", (req, res) => {
-  res.send("API is running...");
+app.get("/api/auth", (req, res) => {
+  res.send("API is running 🚀");
 });
 
 // Auth routes
-app.use("/auth", authRoutes);
+app.use('/uploads', express.static(path.join(process.cwd(), '../uploads')));
+app.use("/api/auth", authRoutes);
+app.use("/api/movies", movieRouter);
 
 module.exports = app;

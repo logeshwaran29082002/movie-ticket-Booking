@@ -3,10 +3,19 @@ const router = express.Router();
 
 const { registerUser } = require("../controller/userController");
 const { login } = require("../controller/logincontroller");
+const authMiddleware = require("../middlewares/auth");
 
-// Register route
+// Public routes
 router.post("/signup", registerUser);
-
-// Login route
 router.post("/login", login);
+
+// 🔐 Protected route example
+router.get("/profile", authMiddleware, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user,
+  });
+});
+
+
 module.exports = router;
