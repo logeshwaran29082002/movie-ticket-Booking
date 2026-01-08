@@ -4,6 +4,7 @@ const authRoutes = require('./routes/authRoutes')
 const connectDB = require("./config/db");
 const movieRouter = require("./routes/movieRoutes");
 const path = require("path");
+const bookingRouter = require("./routes/bookingRouter");
 require("dotenv").config();
 
 // Connect to MongoDB
@@ -25,5 +26,5 @@ app.get("/api/auth", (req, res) => {
 app.use('/uploads', express.static(path.join(process.cwd(), '../uploads')));
 app.use("/api/auth", authRoutes);
 app.use("/api/movies", movieRouter);
-
+app.use('/api/bookings',bookingRouter)
 module.exports = app;

@@ -1,42 +1,42 @@
-const generateToken = require("../utils/generateToken");
+const jwt = require("jsonwebtoken");
 const User = require("../models/userModels");
 
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer")) {
-    return res.status(404).json({
-      sucess: false,
-      messagge: "Not authorized token missing.",
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      success: false,
+      message: "Not authorized, token missing",
     });
   }
-  const token = authHeader.split("")[1];
+
+  // ✅ CORRECT split
+  const token = authHeader.split(" ")[1];
 
   try {
-    // Verify token
+    // ✅ ONLY jwt.verify here
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    // Find user (without password)
-    const user = await User.findById(decoded.id).select("-password");
-    if(!user){
-        return res.status(404).json({
-            sucess:false,
-            message:"User not found"
-        })
-    }
-       // 5. Attach user to request
-    req.user = user;
 
-    next(); // ✅ allow access
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    req.user = user;
+    next();
 
   } catch (error) {
-    console.log('JWT verification failed:',error);
+    console.log("JWT verification failed:", error);
     return res.status(401).json({
-        sucess:false,
-        message:'Token invalied or expired.'
-    })
-    
+      success: false,
+      message: "Token invalid or expired",
+    });
   }
 };
-
 
 module.exports = authMiddleware;
