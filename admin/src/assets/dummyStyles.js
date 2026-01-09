@@ -259,8 +259,8 @@ export const styles4 = {
   maxWidthContainer: "max-w-6xl mx-auto",
   
   // Navbar styles
-  navbar: "bg-black border-b-2 border-red-600 shadow-2xl relative z-40 ",
-  navbarContainer: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+  navbar: "bg-black border-b-2 border-red-600 shadow-2xl relative z-40",
+  navbarContainer: "w-full px-6 sm:px-8 lg:px-12",
   navbarFlex: "flex items-center justify-between h-16",
   logoContainer: "flex items-center space-x-3",
   logoIcon: "flex items-center justify-center w-10 h-10 bg-red-600 rounded-full transform rotate-12 hover:rotate-0 transition-transform duration-300",

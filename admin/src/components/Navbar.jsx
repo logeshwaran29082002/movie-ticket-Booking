@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { styles4 } from "../assets/dummyStyles";
-import { Calendar, Film, List, Menu, Ticket, X, XIcon } from "lucide-react";
+import { Calendar, Film, List, Menu, Ticket, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
-  const toggleOpen = useCallback(() => setOpen((v) => !v), []);
+  const toggleOpen = useCallback(() => setOpen(v => !v), []);
   const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ function Navbar() {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [open, close]); // this function helps in close the menu for mobile view when click on escape btn
+  }, [open, close]);
 
   const NavItem = ({ to, Icon, label, end = false, onClick }) => (
     <NavLink
@@ -51,42 +51,81 @@ function Navbar() {
   );
 
   return (
-    <>
-      <nav className={styles4.navbar}>
-        <div className={styles4.navbarContainer}>
-          <div className={styles4.navbarFlex}>
-            {/* logo*/}
-            <div className={styles4.logoContainer}>
-              <div className={styles4.logoIcon}>
-                <Film className={styles4.logoIconInner} />
-              </div>
-              <span className={styles4.logoText}>CINEVERSE</span>
+    <nav className={styles4.navbar}>
+      {/* Navbar */}
+      <div className={styles4.navbarContainer}>
+        <div className={styles4.navbarFlex}>
+          {/* Logo */}
+          <div className={styles4.logoContainer}>
+            <div className={styles4.logoIcon}>
+              <Film className={styles4.logoIconInner} />
             </div>
-            {/* Desktop Links (unchanged look) */}
-            <div className={styles4.desktopNav}>
-              <NavItem to="/" Icon={Film} label="ADD MOVIES" end />
-              <NavItem to="/listmovies" Icon={List} label="LIST MOVIES" />
-              {/* Dashboard */}
-              <NavItem to="/dashboard" Icon={Calendar} label="DASHBOARD" />
-              {/* Bookings (new) */}
-              <NavItem to="/bookings" Icon={Ticket} label="BOOKINGS" />
-            </div>
-            {/* toggle */}
-            <div className="flex items-center lg:hidden">
-              <button onClick={toggleOpen} className={styles4.mobileMenuButton}>
-                <span className="sr-only">Open main menu</span>
-                {open ? (
-                  <XIcon className={styles4.mobileMenuIcon} />
-                ) : (
-                  <Menu className={styles4.mobileMenuIcon} />
-                )}
-              </button>
-            </div>
+            <span className={styles4.logoText}>CINEVERSE</span>
+          </div>
+
+          {/* Desktop Links */}
+          <div className={styles4.desktopNav}>
+            <NavItem to="/" Icon={Film} label="ADD MOVIES" end />
+            <NavItem to="/listmovies" Icon={List} label="LIST MOVIES" />
+            <NavItem to="/dashboard" Icon={Calendar} label="DASHBOARD" />
+            <NavItem to="/bookings" Icon={Ticket} label="BOOKINGS" />
+          </div>
+
+          {/* Mobile toggle */}
+          <div className="flex items-center lg:hidden">
+            <button onClick={toggleOpen} className={styles4.mobileMenuButton}>
+              {open ? (
+                <X className={styles4.mobileMenuIcon} />
+              ) : (
+                <Menu className={styles4.mobileMenuIcon} />
+              )}
+            </button>
           </div>
         </div>
-        <div className={`${styles4.mobileMenuContainer}`}></div>
-      </nav>
-    </>
+      </div>
+
+      {/* Mobile menu */}
+      <div
+        className={`${styles4.mobileMenuContainer} ${
+          open ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className={`${styles4.mobileMenuBackdrop} ${
+            open ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={close}
+        />
+
+        {/* Panel */}
+        <aside
+          className={`${styles4.mobileMenuPanel} ${
+            open ? "translate-x-0" : "translate-x-full"
+          }`}
+          role="dialog"
+        >
+          <div className={styles4.mobileMenuPanelHeader}>
+            <div className={styles4.logoContainer}>
+              <div className="flex items-center justify-center w-10 h-10 bg-red-600 rounded-full transform rotate-12">
+                <Film className="w-6 h-6 text-white transform -rotate-12" />
+              </div>
+              <span className="font-['Impact'] text-xl text-white tracking-wider">
+                CINEVERSE
+              </span>
+            </div>
+          </div>
+
+          {/* Mobile links */}
+          <div className={styles4.mobileMenuPanelNav}>
+            <NavItem to="/" Icon={Film} label="ADD MOVIES" end onClick={close} />
+            <NavItem to="/listmovies" Icon={List} label="LIST MOVIES" onClick={close} />
+            <NavItem to="/dashboard" Icon={Calendar} label="DASHBOARD" onClick={close} />
+            <NavItem to="/bookings" Icon={Ticket} label="BOOKINGS" onClick={close} />
+          </div>
+        </aside>
+      </div>
+    </nav>
   );
 }
 
