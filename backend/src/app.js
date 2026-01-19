@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 
 // Health check route
-app.get("/api/auth", (req, res) => {
+app.get("/", (req, res) => {
   res.send("API is running 🚀");
 });
 

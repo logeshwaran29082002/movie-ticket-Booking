@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {Routes,Route} from 'react-router-dom'
 import Home from './pages/Home'
 import './App.css'
+import AddPage from './components/AddPage'
 
 function App() {
 
@@ -9,6 +10,7 @@ function App() {
     <>
    <Routes>
     <Route path='/' element={<Home/>}/>
+    <Route path='/' element={<AddPage/>}/>
    </Routes>
     </>
   )
