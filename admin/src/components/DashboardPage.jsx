@@ -26,7 +26,6 @@ function DashboardPage() {
           axios.get(`${API_BASE}/api/bookings`, {
             params: { paymentStatus: "Paid", limit: 1000 },
           }),
-          axios.get(`${API_BASE}/api/auth`), // not for user route but to get the user from the booking done is one user can have multi bookings
         ]);
         // helper to normalise typical API shapes
         const normaliseArrayResponse = (r) => {
@@ -281,11 +280,14 @@ function DashboardPage() {
                     </tr>
                   );
                 })}
-                {summary.movieStats.length === 0 && (
-                  <tr className={styles3.tableEmpty} colSpan={4}>
-                    No Movies Data Yet.
-                  </tr>
-                )}
+               {summary.movieStats.length === 0 && (
+  <tr className={styles3.tableEmpty}>
+    <td colSpan={4} style={{ textAlign: "center" }}>
+      No Movies Data Yet.
+    </td>
+  </tr>
+)}
+
               </tbody>
             </table>
           </div>
@@ -324,7 +326,11 @@ function DashboardPage() {
             })}
 
             {summary.movieStats.length === 0 && (
-              <div className={styles3.mobileEmpty}>No Movie data yet.</div>
+              <div className={styles3.mobileEmpty}>
+                
+                
+                
+                No Movie data yet.</div>
             )}
           </div>
         </section>
