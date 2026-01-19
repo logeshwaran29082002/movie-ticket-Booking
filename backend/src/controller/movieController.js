@@ -3,7 +3,8 @@ const Movie = require("../models/movieModel");
 const fs = require("fs");
 const path = require("path");
 
-const API_BASE = "http://localhost:5000/auth";
+
+const API_BASE = "http://localhost:5000";
 
 /* ---------------------- small helpers ---------------------- */
 // Builds a full upload URL from a filename or returns null if invalid
@@ -297,7 +298,7 @@ const getMovies = async (req, res) => {
         filter = Object.keys(filter).length ===0 ? {
             type:'latestTrailers'
         } :{
-            $and:[filter,{ type:'latestTrailer'}]
+            $and:[filter,{ type:'latestTrailers'}]
         }
       }
 

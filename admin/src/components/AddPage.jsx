@@ -303,41 +303,45 @@ function AddPage() {
     form.append("type", movieType);
 
     if (movieType === "latestTrailers") {
-      const latestTrailerObj = {
-        title: movieName,
-        genres: categories,
-        duration: {
-          hours: Number(ltDurationHours) || 0,
-          minutes: Number(ltDurationMinutes) || 0,
-        },
-        year: Number(ltYear) || new Date().getFullYear(),
-        rating: Number(rating) || 0,
-        description: ltDescription,
-        thumbnail: ltThumbnail,
-        videoId: ltVideoUrl,
-        directors: ltDirectorImages.map((d) => ({
-          name: d.name || "",
-          file: d.file ? d.file.name : null,
-        })),
-        producers: ltProducerImages.map((p) => ({
-          name: p.name || "",
-          file: p.file ? p.file.name : null,
-        })),
-        singers: ltSingerImages.map((s) => ({
-          name: s.name || "",
-          file: s.file ? s.file.name : null,
-        })),
-      };
+  const latestTrailerObj = {
+    title: movieName,
+    genres: categories,
+    duration: {
+      hours: Number(ltDurationHours) || 0,
+      minutes: Number(ltDurationMinutes) || 0,
+    },
+    year: Number(ltYear),
+    rating: Number(rating),
+    description: ltDescription,
+    videoId: ltVideoUrl, // still ok
+    directors: ltDirectorImages.map((d) => ({
+      name: d.name || "",
+      file: d.file?.name || null,
+    })),
+    producers: ltProducerImages.map((p) => ({
+      name: p.name || "",
+      file: p.file?.name || null,
+    })),
+    singers: ltSingerImages.map((s) => ({
+      name: s.name || "",
+      file: s.file?.name || null,
+    })),
+  };
 
-      form.append("movieName", movieName);
-      form.append("latestTrailer", JSON.stringify(latestTrailerObj));
+  form.append("movieName", movieName);
+  form.append("latestTrailer", JSON.stringify(latestTrailerObj));
 
-      if (ltThumbnail) form.append("ltThumbnail", ltThumbnail);
+  // 🔥 ADD THIS
+  form.append("ltVideoUrl", ltVideoUrl);
 
-      appendFilesToForm(form, "ltDirectorFiles", ltDirectorImages);
-      appendFilesToForm(form, "ltProducerFiles", ltProducerImages);
-      appendFilesToForm(form, "ltSingerFiles", ltSingerImages);
-    } else {
+  if (ltThumbnail) form.append("ltThumbnail", ltThumbnail);
+
+  appendFilesToForm(form, "ltDirectorFiles", ltDirectorImages);
+  appendFilesToForm(form, "ltProducerFiles", ltProducerImages);
+  appendFilesToForm(form, "ltSingerFiles", ltSingerImages);
+}
+
+     else {
       // normal / featured / releaseSoon
       form.append("movieName", movieName);
       form.append("categories", JSON.stringify(categories));
@@ -1173,12 +1177,13 @@ function NamedUploader({ title, onFiles, items, remove, updateName, icon }) {
                 className={addMoviePageStyles.namedUploaderImage}
               />
               <div className="flex-1">
-                <input
-                  key={it.name}
-                  onChange={(e) => updateName(idx, e.target.value)}
-                  placeholder="Name"
-                  className={addMoviePageStyles.namedUploaderInput}
-                />
+             <input
+  value={it.name}
+  onChange={(e) => updateName(idx, e.target.value)}
+  placeholder="Name"
+  className={addMoviePageStyles.namedUploaderInput}
+/>
+
                 <div className={addMoviePageStyles.namedUploaderFileName}>
                   File:{it.file?.name}
                 </div>

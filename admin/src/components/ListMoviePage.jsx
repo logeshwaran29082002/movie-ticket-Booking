@@ -5,14 +5,19 @@ import { Calendar, Film, Play as PlayIcon, Star, Ticket, Search, X , Clock , Pla
 const API_BASE = "http://localhost:5000";
 
 function getImageUrl(maybe) {
-  // Convert filename, uploads/filename, or partial to a full uploads URL.
   if (!maybe) return null;
   if (typeof maybe !== "string") return null;
-  if (maybe.startsWith("http://") || maybe.startsWith("https://")) return maybe;
-  // remove leading uploads/ if present
-  const cleaned = String(maybe).replace(/^uploads\//, "");
-  return `${API_BASE}/uploads/${cleaned}`;
+
+  // ✅ already full URL → return as-is
+  if (maybe.startsWith("http://") || maybe.startsWith("https://")) {
+    return maybe;
+  }
+
+  // only for filename
+  const cleaned = maybe.replace(/^uploads\//, "");
+  return `http://localhost:5000/uploads/${cleaned}`;
 }
+
 
 function ListMoviePage() {
   const [movies, setMovies] = useState([]);
@@ -30,6 +35,7 @@ function ListMoviePage() {
     searchRef.current = setTimeout(() => {
       fetchMovies();
     }, 300);
+    return () => clearTimeout(searchRef.current);
   }, [filterType, search]);
   // to fetch
   useEffect(() => {
@@ -49,6 +55,7 @@ function ListMoviePage() {
       }
       if (filterType === "latestTrailers") {
         params.latestTrailers = true;
+        params.type = 'latestTrailers'
       }
       if (search && search.trim()) params.search = search.trim();
       const res = await axios.get(`${API_BASE}/api/movies`, { params });
@@ -62,7 +69,6 @@ function ListMoviePage() {
       }
       const normalized = items.map(normalizeMovie);
       setMovies(normalized);
-      console.log("Movies:", normalized);
     } catch (err) {
       console.log("FetchMovies Error:", err);
       setError(
@@ -78,7 +84,8 @@ function ListMoviePage() {
     const obj = { ...item };
 
     // Normalize top-level poster
-    obj.poster = getImageUrl(item.poster) || (item.poster ? item.poster : null);
+  obj.poster = getImageUrl(item.poster);
+
 
     // Normalize top-level cast/person previews (top-level arrays often store full URLs or file URL)
     const normalizeTopPeople = (arr = []) =>
@@ -112,11 +119,8 @@ function ListMoviePage() {
       obj.title = lt.title || item.title || item.movieName || null;
 
       // Thumbnail might be saved as filename (for latestTrailer persons/files we store filename), or full URL
-      obj.thumbnail =
-        getImageUrl(lt.thumbnail) ||
-        getImageUrl(item.thumbnail) ||
-        lt.thumbnail ||
-        null;
+     obj.thumbnail = getImageUrl(lt.thumbnail);
+
 
       // trailer link: could be in latestTrailer.videoId or top-level trailerUrl
       obj.trailerUrl = lt.videoId || item.trailerUrl || lt.trailerUrl || null;
@@ -190,11 +194,10 @@ async function handleDelete(id) {
 
   try {
     const targetId = item._id || item.id;
-    console.log("Deleting movie id:", targetId);
 
     const res = await axios.delete(`${API_BASE}/api/movies/${targetId}`);
 
-    if (res.data?.success) {
+if (res?.data?.success) {
       setMovies((prev) =>
         prev.filter((m) => (m._id || m.id) !== targetId)
       );
@@ -363,12 +366,13 @@ function Card({ item, onOpen, onDelete }) {
     return colors[type] || "from-gray-500 to-gray-600";
   };
 
-  const posterOrThumb =
-    item.poster ||
-    item.thumbnail ||
-    item.image ||
-    item.latestTrailer?.thumbnail ||
-    null;
+ const posterOrThumb = getImageUrl(
+  item.poster ||
+  item.thumbnail ||
+  item.image ||
+  item.latestTrailer?.thumbnail
+);
+
 
   return (
     <div
@@ -531,11 +535,12 @@ function PersonGrid({ list = [], roleLabel = "" }) {
             className={styles5.personItem}
           >
             <div className="relative">
-              <img
-                src={p.preview || p.file || p.image || p.url || ""}
-                alt={p.name || `${roleLabel}-${i}`}
-                className={styles5.personAvatar}
-              />
+             <img
+  src={getImageUrl(p.preview || p.file || p.image || p.url)}
+  alt={p.name || `${roleLabel}-${i}`}
+  className={styles5.personAvatar}
+/>
+
             </div>
             <div className={styles5.personName}>
               {p.name || "-"}

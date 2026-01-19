@@ -3,7 +3,7 @@ import {Routes,Route} from 'react-router-dom'
 import Home from './pages/Home'
 import './App.css'
 import ListMovie from './pages/ListMovie'
-
+import Dashboard from './pages/Dashboard'
 function App() {
 
   return (
@@ -11,6 +11,7 @@ function App() {
    <Routes>
     <Route path='/' element={<Home/>}/>
     <Route path='/listmovies' element={<ListMovie/>}/>
+    <Route path='/dashboard' element={<Dashboard/>}/>
    </Routes>
     </>
   )
