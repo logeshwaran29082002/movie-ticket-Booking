@@ -246,13 +246,13 @@ function DashboardPage() {
 
         <section className={styles3.moviesSection}>
           <div className={styles3.moviesHeader}>
-            <h2 className={styles3.movieTitle}>Movie - Bookings & Earnings</h2>
+            <h2 className={styles3.moviesTitle}>Movie - Bookings & Earnings</h2>
             <div className={styles3.moviesCount}>
               {summary.movieStats.length} movies
             </div>
           </div>
           <div className={styles3.tableContainer}>
-            <table className={styles3.tableContainer}>
+            <table className={styles3.table}>
               <thead>
                 <tr className={styles3.tableHeader}>
                   <th className={styles3.tableHeaderCell}>Movie</th>

@@ -166,7 +166,7 @@ export const styles3 = {
   // Layout styles
   pageContainer: "min-h-screen bg-black text-gray-100 p-6 sm:p-10",
   dashboardPageContainer: "min-h-screen bg-black text-gray-100 p-4 sm:p-6 lg:p-8",
-  maxWidthContainer: "max-w-6xl mx-auto",
+    maxWidthContainer: "max-w-screen-2xl mx-auto px-6",
   
   // Header styles
   headerContainer: "mb-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4",
