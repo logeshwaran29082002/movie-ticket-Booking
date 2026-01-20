@@ -118,8 +118,7 @@ export const addMoviePageCustomStyles = `
 export const styles2 = {
   // Layout styles
   pageContainer: "min-h-screen bg-black text-gray-100 p-6 sm:p-10",
-  maxWidthContainer: "max-w-6xl mx-auto",
-  
+  maxWidthContainer: "w-full px-6",  
   // Header styles
   headerContainer: "mb-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4",
   formContainer: "flex items-center gap-3 w-full lg:w-auto",
@@ -131,7 +130,8 @@ export const styles2 = {
   // Grid and cards
   gridContainer: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4",
   messageContainer: "col-span-full text-center text-gray-400 py-8 border border-red-800 rounded-lg",
-  bookingCard: "bg-gradient-to-r from-gray-900 to-black border border-red-800 rounded-xl p-4 shadow-lg flex flex-col justify-between",
+bookingCard:
+"w-full overflow-hidden bg-gradient-to-r from-gray-900 to-black border border-red-800 rounded-xl p-4 shadow-lg flex flex-col justify-between",
   
   // Card content
   movieIconContainer: "w-12 h-12 rounded-md bg-red-800 flex items-center justify-center text-white",

@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import './App.css'
 import ListMovie from './pages/ListMovie'
 import Dashboard from './pages/Dashboard'
+import Booking from './pages/Booking'
 function App() {
 
   return (
@@ -12,6 +13,7 @@ function App() {
     <Route path='/' element={<Home/>}/>
     <Route path='/listmovies' element={<ListMovie/>}/>
     <Route path='/dashboard' element={<Dashboard/>}/>
+    <Route path='/bookings' element={<Booking/>}/>
    </Routes>
     </>
   )
