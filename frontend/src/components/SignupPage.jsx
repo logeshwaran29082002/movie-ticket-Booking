@@ -13,6 +13,10 @@ import {
   Lock,
   Film,
 } from "lucide-react";
+import axios from "axios";
+
+const API_BASE = "http://localhost:5000/api/auth";
+
 function SignupPage() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -91,7 +95,7 @@ function SignupPage() {
   const goBack = () => {
     window.history.back();
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
       toast.error("Please fix the form errors.");
@@ -102,13 +106,53 @@ function SignupPage() {
       password: "***" + formData.password.slice(-2),
     });
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Account created sucessfully ! Redirecting to Login...");
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-    }, 1500);
+    try {
+     const payload = {
+  fullName: formData.fullName.trim(),
+  userName: formData.username.trim(),      // ✅ match backend
+  email: formData.email.trim().toLowerCase(),
+  phone: formData.phone.replace(/\D/g, ""), // ✅ digits only
+  birthdate: formData.birthDate,            // ✅ match backend
+  password: formData.password,
+};
+
+  const response = await axios.post(`${API_BASE}/signup`,payload,{
+    headers:{"Content-Type":"application/json"}
+  })
+  if(response.data && response.data.success){
+    toast.success("Account Created Sucessfully! Redirecting to Login..." );
+    if(response.data.token){
+      localStorage.setItem('token',response.data.token);
+    }
+    if(response.data.user) {
+      localStorage.setItem("user",JSON.stringify(response.data.user));
+    }
+    setTimeout(()=>{
+      window.location.href = '/login';
+    },1000)
+  } else{
+    toast.error(response.data?.message || "Registration Failed.")
+  }
+    } 
+    catch (err) {
+      console.error("Registration error:", err);
+      // If backend returned an error message, try to map it to a field
+      const serverMsg =
+        err?.response?.data?.message || err?.message || "Server error";
+
+      // Map common backend messages to the form fields
+      if (serverMsg.toLowerCase().includes("email")) {
+        setErrors((prev) => ({ ...prev, email: serverMsg }));
+      } else if (serverMsg.toLowerCase().includes("username")) {
+        setErrors((prev) => ({ ...prev, username: serverMsg }));
+      } else if (serverMsg.toLowerCase().includes("phone")) {
+        setErrors((prev) => ({ ...prev, phone: serverMsg }));
+      } else {
+        toast.error(serverMsg);
+      }
+    } finally{
+      setIsLoading(false)
+    }
   };
 
   return (

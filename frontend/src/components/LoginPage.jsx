@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { loginStyles } from "../assets/dummyStyles";
 import { toast, ToastContainer } from "react-toastify";
 import { ArrowLeft, Film, Eye, EyeOff, Clapperboard, Popcorn } from "lucide-react";
+import axios from 'axios'
+const API_BASE = "http://localhost:5000/api/auth";
 
 function LoginPage() {
   const [formData, setFormData] = useState({
@@ -22,7 +24,7 @@ function LoginPage() {
   };
 
   // handle submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -33,37 +35,78 @@ function LoginPage() {
     }
 
     if (!formData.password || formData.password.length < 6) {
-      setIsLoading(false);
       toast.error("Password must be at least 6 characters long");
-      console.warn("Login Blocked");
       return;
     }
+// simulate API request
+try {
+  const payload ={
+    email: formData.email.trim(),
+    password:formData.password,
+  };
+  const res = await axios.post(`${API_BASE}/login`,payload,{
+    headers:{'Content-Type':'application/json'}
+  });
+  const data = res.data;
+  if(data && data.success ){
+    toast.success(data.message || 'Login Successful! Redirecting...');
+    if(data.token){
+      localStorage.setItem('token',data.token);
+    }
+    try{
+      const userToStore = data.user || {email: formData.email};
+      localStorage.setItem(
+            "cine_auth",
+            JSON.stringify({
+              isLoggedIn: true,
+              email: userToStore.email || formData.email,
+            })
+          );
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem(
+            "userEmail",
+            userToStore.email || formData.email || ""
+          );
+          localStorage.setItem(
+            "cine_user_email",
+            userToStore.email || formData.email || ""
+          );
+          localStorage.setItem("user", JSON.stringify(userToStore));
 
-    console.log("Login Data:", formData);
 
-    // simulate API request
-    setTimeout(() => {
-      setIsLoading(false);
-      // Persist auth to localStorage so Navbar detects logged-in state
-      try {
-        const authObj = { isLoggedIn: true, email: formData.email };
-        localStorage.setItem("cine_auth", JSON.stringify(authObj));
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userEmail", formData.email || "");
-        localStorage.setItem("cine_user_email", formData.email || "");
-        console.log("Auth saved to localStorage:", authObj);
-      } catch (err) {
-        console.error("Failed to login:", err);
+    } catch(err){
+      console.warn("Failed to persist full user obj")
+    }
+    setTimeout(()=>{
+      window.location.href ="/";
+    },1200);
+  } else{
+    toast.error(data?.message || "Login Failed");
+  }
+} catch (err) {
+      console.error("Login error:", err);
+      const serverMsg =
+        err?.response?.data?.message || err?.message || "Server error";
+
+      // Map common backend messages to specific UI responses
+      const msgLower = String(serverMsg).toLowerCase();
+      if (msgLower.includes("password") || msgLower.includes("invalid")) {
+        toast.error(serverMsg);
+      } else if (msgLower.includes("email")) {
+        toast.error(serverMsg);
+      } else {
+        toast.error(serverMsg);
       }
-      toast.success("Login successful! Redirecting to your cinima...");
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 2000);
-    }, 1500);
+    }finally{
+      setIsLoading(false);
+    }
+
+    
+
   };
 
   const goBack = () => {
-    window.history.back();
+    window.location.href = "/";
   };
 
   return (

@@ -12,12 +12,13 @@ import {
   LogIn,
   LogOut,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+const navigate = useNavigate();
 
   const navItems = [
     { id: "home", label: "Home", icon: Home, path: "/" },
@@ -101,9 +102,13 @@ function Navbar() {
                 <LogOut className={navbarStyles.authIcon} /> Log out
               </button>
             ) : (
-              <button className={navbarStyles.loginButton}>
-                <LogIn className={navbarStyles.authIcon} /> Log in
-              </button>
+              <button
+  onClick={() => navigate("/login")}
+  className={navbarStyles.loginButton}
+>
+  <LogIn className={navbarStyles.authIcon} /> Log in
+</button>
+
             )}
           </div>
 
@@ -158,10 +163,13 @@ function Navbar() {
                   Logout
                 </button>
               ) : (
-                <button className={navbarStyles.mobileLoginButton}>
-                  <LogIn className={navbarStyles.mobileAuthIcon} />
-                  Login
-                </button>
+               <button
+  onClick={() => navigate("/login")}
+  className={navbarStyles.loginButton}
+>
+  <LogIn className={navbarStyles.authIcon} /> Log in
+</button>
+
               )}
             </div>
           </div>
