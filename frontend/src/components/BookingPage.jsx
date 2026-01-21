@@ -1,15 +1,18 @@
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {bookingsPageStyles, formatTime , formatDuration} from '../assets/dummyStyles'
-import QRCode from 'qrcode';
-import axios from 'axios';
-import{Film, Clock ,  MapPin ,  QrCode, ChevronDown } from 'lucide-react'
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  bookingsPageStyles,
+  formatTime,
+  formatDuration,
+} from "../assets/dummyStyles";
+import QRCode from "qrcode";
+import axios from "axios";
+import { Film, Clock, MapPin, QrCode, ChevronDown } from "lucide-react";
 
 const API_BASE = "http://localhost:5000";
 
-function getStoredToken(){
-  return(
+function getStoredToken() {
+  return (
     localStorage.getItem("token") ||
     localStorage.getItem("authToken") ||
     localStorage.getItem("accessToken") ||
@@ -17,9 +20,8 @@ function getStoredToken(){
   );
 }
 
-
 function BookingPage() {
-    const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [qrs, setQrs] = useState({});
   const [expanded, setExpanded] = useState({});
   const [scannedDetails, setScannedDetails] = useState(null);
@@ -27,8 +29,7 @@ function BookingPage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-
-   // prefer authoritative totals returned by server
+  // prefer authoritative totals returned by server
   function computeTotals(booking) {
     // Priority 1: amountPaise on top-level or raw
     if (booking.amountPaise !== undefined && booking.amountPaise !== null) {
@@ -84,32 +85,32 @@ function BookingPage() {
     return { subtotal, total: subtotal, seatCount: seats.length };
   }
 
-  //featch function 
-  useEffect(()=>{
+  //featch function
+  useEffect(() => {
     let mounted = true;
     async function fetchMyBooking() {
       setLoading(true);
-        setError("")
+      setError("");
 
+      try {
+        const token = getStoredToken();
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+        let res;
         try {
-          const token = getStoredToken();
-          if(!token){
-            navigate('/login');
-            return;
-          }
-          let res;
-          try {
-            res = await axios.get(`${API_BASE}/api/bookings/my`,{
-              headers:{Authorization:`Bearer ${token}`},
-              timeout:15000,
-            });
-          } catch (err) {
-            res= await axios.get(`${API_BASE}/api/bookings`,{
-              headers:{Authorization:`Bearer ${token}`},
-            timeout:15000
-            })
-          }
-            const data = res?.data || {};
+          res = await axios.get(`${API_BASE}/api/bookings/my`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 15000,
+          });
+        } catch (err) {
+          res = await axios.get(`${API_BASE}/api/bookings`, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: 15000,
+          });
+        }
+        const data = res?.data || {};
         let items = [];
         if (Array.isArray(data)) items = data;
         else if (Array.isArray(data.items)) items = data.items;
@@ -142,7 +143,7 @@ function BookingPage() {
                         type: s.type,
                         price:
                           typeof s.price === "number" ? s.price : undefined,
-                      }
+                      },
                 )
               : [];
 
@@ -172,8 +173,7 @@ function BookingPage() {
         });
 
         if (mounted) setBookings(normalized);
-        } 
-        catch (err) {
+      } catch (err) {
         console.error("Failed to load bookings:", err);
         const status = err?.response?.status;
         if (status === 401 || status === 403) {
@@ -185,7 +185,7 @@ function BookingPage() {
           setError(
             err?.response?.data?.message ||
               err.message ||
-              "Failed to load bookings"
+              "Failed to load bookings",
           );
         }
       } finally {
@@ -200,8 +200,7 @@ function BookingPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-      
-   
+
   // generate QRs for current bookings
   useEffect(() => {
     let mounted = true;
@@ -262,7 +261,7 @@ function BookingPage() {
     }
   };
 
-const closeModel = () => setScannedDetails(null);
+  const closeModel = () => setScannedDetails(null);
 
   return (
     <div className={bookingsPageStyles.pageContainer}>
@@ -280,16 +279,16 @@ const closeModel = () => setScannedDetails(null);
           <div className={bookingsPageStyles.error}>{error}</div>
         )}
         <div className={bookingsPageStyles.grid}>
-          {bookings.length === 0 && !loading ?(
+          {bookings.length === 0 && !loading ? (
             <div className={bookingsPageStyles.noBookings}>
               No Bookings Found.
             </div>
-          ):(
-            bookings.map((b) =>{
+          ) : (
+            bookings.map((b) => {
               const totals = computeTotals(b);
               const isOpen = !!expanded[b.id];
 
-                 return (
+              return (
                 <article
                   id={`booking-card-${b.id}`}
                   key={b.id}
@@ -337,11 +336,15 @@ const closeModel = () => setScannedDetails(null);
 
                         <div className={bookingsPageStyles.locationContainer}>
                           <MapPin className={bookingsPageStyles.locationIcon} />
-                          <div className={bookingsPageStyles.locationText}>{b.auditorium}</div>
+                          <div className={bookingsPageStyles.locationText}>
+                            {b.auditorium}
+                          </div>
                         </div>
                       </div>
 
-                      <div className={bookingsPageStyles.durationLabel}>Duration</div>
+                      <div className={bookingsPageStyles.durationLabel}>
+                        Duration
+                      </div>
                       <div className={bookingsPageStyles.duration}>
                         {formatDuration(b.durationMins)}
                       </div>
@@ -359,7 +362,9 @@ const closeModel = () => setScannedDetails(null);
 
                   <div
                     className={`${bookingsPageStyles.expandedDetails} ${
-                      isOpen ? bookingsPageStyles.expandedOpen : bookingsPageStyles.expandedClosed
+                      isOpen
+                        ? bookingsPageStyles.expandedOpen
+                        : bookingsPageStyles.expandedClosed
                     }`}
                     aria-hidden={!isOpen}
                   >
@@ -373,7 +378,9 @@ const closeModel = () => setScannedDetails(null);
                             key={s.id || s}
                             className={bookingsPageStyles.seatItem}
                           >
-                            <div className={bookingsPageStyles.seatId}>{s.id || s}</div>
+                            <div className={bookingsPageStyles.seatId}>
+                              {s.id || s}
+                            </div>
                             <div
                               className={`${bookingsPageStyles.seatType} ${
                                 s.type === "recliner"
@@ -436,16 +443,15 @@ const closeModel = () => setScannedDetails(null);
                       <span>{isOpen ? "Hide details" : "View details"}</span>
                       <ChevronDown
                         className={`${bookingsPageStyles.chevron} ${
-                          isOpen ? bookingsPageStyles.chevronOpen : bookingsPageStyles.chevronClosed
+                          isOpen
+                            ? bookingsPageStyles.chevronOpen
+                            : bookingsPageStyles.chevronClosed
                         }`}
                       />
                     </button>
                   </div>
                 </article>
               );
-
-
-
             })
           )}
         </div>
@@ -453,8 +459,7 @@ const closeModel = () => setScannedDetails(null);
 
       {/*Scanned detailes */}
 
-      
-{scannedDetails && (
+      {scannedDetails && (
         <div
           className={bookingsPageStyles.modalOverlay}
           aria-modal="true"
@@ -505,7 +510,7 @@ const closeModel = () => setScannedDetails(null);
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default BookingPage
+export default BookingPage;
