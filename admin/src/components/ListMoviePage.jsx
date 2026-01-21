@@ -366,12 +366,12 @@ function Card({ item, onOpen, onDelete }) {
     return colors[type] || "from-gray-500 to-gray-600";
   };
 
- const posterOrThumb = getImageUrl(
-  item.poster ||
+ const posterOrThumb =
   item.thumbnail ||
+  item.poster ||
   item.image ||
-  item.latestTrailer?.thumbnail
-);
+  null;
+
 
 
   return (

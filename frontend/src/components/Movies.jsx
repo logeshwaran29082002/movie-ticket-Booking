@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { moviesStyles } from "../assets/dummyStyles";
-import movies from "../assets/dummymoviedata";
 import { Link } from "react-router-dom";
 import { Ticket } from "lucide-react";
 
 const API_BASE = "http://localhost:5000";
-
 const PLACEHOLDER = "https://via.placeholder.com/400x600?text=No+Poster";
 
 const getUploadUrl = (maybe) => {
@@ -16,44 +14,44 @@ const getUploadUrl = (maybe) => {
 };
 
 function Movies() {
-    const [movies, setMovies] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-  useEffect(()=>{
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
     const ac = new AbortController();
-    setLoading(true)
+    setLoading(true);
     setError(null);
 
     async function loadFeaturedMovies() {
       try {
         const url = `${API_BASE}/api/movies?featured=true&limit=6`;
-        const res = await fetch(url,{signal:ac.signal});
-        if(!res.ok) throw new Error(`Fetch error: ${res.status}`);
+        const res = await fetch(url, { signal: ac.signal });
+        if (!res.ok) throw new Error(`Fetch error: ${res.status}`);
+
         const json = await res.json();
-        const items = json.items ?? (Array.isArray(json) ? json:[]);
+        const items = json.items ?? (Array.isArray(json) ? json : []);
+
         const featuredOnly = items.filter(
           (it) =>
             it?.featured === true ||
-          it?.isFeatured === true ||
-          String(it?.type)?.toLowerCase() === "Featured"
+            it?.isFeatured === true ||
+            String(it?.type)?.toLowerCase() === "featured",
         );
-   
-        setMovies(featuredOnly.slice(0,6));
-        setLoading(false);
 
+        setMovies(featuredOnly.slice(0, 6));
+        setLoading(false);
       } catch (err) {
-        if(err.name === "AbortError") return;
-        console.log("Movies load error:",err);
+        if (err.name === "AbortError") return;
+        console.error("Movies load error:", err);
         setError("Failed to Load Movies");
         setLoading(false);
       }
     }
+
     loadFeaturedMovies();
     return () => ac.abort();
-  },[]);
-
-
-  const visibleMovies = movies.slice(0, 6);
+  }, []);
 
   return (
     <section className={moviesStyles.container}>
@@ -62,41 +60,74 @@ function Movies() {
       `}</style>
 
       <h2
-        style={{ fontFamily: "'Dancing Script', cursive" }}
         className={moviesStyles.title}
+        style={{ fontFamily: "'Dancing Script', cursive" }}
       >
         Featured Movie
       </h2>
 
-      <div className={moviesStyles.grid}>
-        {visibleMovies.map((m) => (
-          <article key={m.id} className={moviesStyles.movieArticle}>
-            <Link to={`/movie-home/${m.id}`} className={moviesStyles.movieLink}>
-              <img
-                src={m.img}
-                alt={m.title}
-                loading="lazy"
-                className={moviesStyles.movieImage}
-              />
-            </Link>
-            <div className={moviesStyles.movieInfo}>
-              <div className={moviesStyles.titleContainer}>
-                <Ticket className={moviesStyles.ticketsIcon} />
-                <span
-                  id={`movie-title-${m.id}`}
-                  className={moviesStyles.movieTitle}
-                  style={{ fontFamily: "'pacifico', cursive " }}
+      {loading ? (
+        <div className="text-gray-300 py-12 text-center">Loading Movies...</div>
+      ) : error ? (
+        <div className="text-red-400 py-12 text-center">{error}</div>
+      ) : movies.length === 0 ? (
+        <div className="text-gray-400 py-12 text-center">
+          No featured movies found.
+        </div>
+      ) : (
+        <div className={moviesStyles.grid}>
+          {movies.map((m) => {
+            const rawImg =
+              m.poster || m.latestTrailer?.thumbnail || m.thumbnail || null;
+            const imgSrc = getUploadUrl(rawImg) || PLACEHOLDER;
+            const title = m.movieName || m.title || "Untitled";
+            const category =
+              (Array.isArray(m.categories) && m.categories[0]) ||
+              m.category ||
+              "General";
+            const movieId = m._id || m.id;
+
+            if (!movieId) return null;
+
+            return (
+              <article key={movieId} className={moviesStyles.movieArticle}>
+                <Link
+                  to={`/movie-home/${movieId}`}
+                  className={moviesStyles.movieLink}
                 >
-                  {m.title}
-                </span>
-              </div>
-              <div className={moviesStyles.categoryContainer}>
-                <span className={moviesStyles.categoryText}>{m.category}</span>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+                  <img
+                    src={imgSrc}
+                    alt={title}
+                    loading="lazy"
+                    className={moviesStyles.movieImage}
+                    onError={(e) => {
+                      e.currentTarget.src = PLACEHOLDER;
+                    }}
+                  />
+                </Link>
+
+                <div className={moviesStyles.movieInfo}>
+                  <div className={moviesStyles.titleContainer}>
+                    <Ticket className={moviesStyles.ticketsIcon} />
+                    <span
+                      className={moviesStyles.movieTitle}
+                      style={{ fontFamily: "'Pacifico', cursive" }}
+                    >
+                      {title}
+                    </span>
+                  </div>
+
+                  <div className={moviesStyles.categoryContainer}>
+                    <span className={moviesStyles.categoryText}>
+                      {category}
+                    </span>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

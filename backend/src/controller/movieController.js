@@ -16,6 +16,16 @@ const getUploadUrl = (val) => {
   return `${API_BASE}/uploads/${cleaned}`;
 };
 
+
+const attachLatestTrailerFiles = (people = [], files = []) => {
+  return (people || []).map((p, i) => ({
+    name: p.name || "",
+    role: p.role || "",
+    file: files?.[i]?.filename || null,
+  }));
+};
+
+
 // Extracts the filename from a URL or upload path
 const extractFilenameFromUrl = (u) => {
   if (!u || typeof u !== "string") return null;
@@ -113,13 +123,15 @@ const enrichLatestTrailerForOutput = (lt = {}) => {
 
 const normalizeItemForOutput = (it = {}) => {
   const obj = { ...it };
-  obj.thumbnail = it.latestTrailer?.thumbnail
+ obj.thumbnail =
+  it.latestTrailer?.thumbnail
     ? getUploadUrl(it.latestTrailer.thumbnail)
     : it.poster
     ? getUploadUrl(it.poster)
     : null;
-  obj.trailerUrl =
-    it.trailerUrl || it.latestTrailer?.url || it.latestTrailer?.videoId || null;
+obj.trailerUrl =
+  it.latestTrailer?.videoUrl || it.trailerUrl || null;
+
 
   if (it.type === "latestTrailers" && it.latestTrailer) {
     const lt = it.latestTrailer;
@@ -147,15 +159,13 @@ const normalizeItemForOutput = (it = {}) => {
 const createMovie = async (req, res) => {
   try {
     const body = req.body || {};
+
     const posterUrl = req.files?.poster?.[0]?.filename
       ? getUploadUrl(req.files.poster[0].filename)
       : body.poster || null;
-    const trailerUrl = req.files?.trailerUrl?.[0]?.filename
-      ? getUploadUrl(req.files.trailerUrl[0].filename)
-      : body.trailerUrl || null;
-    const videoUrl = req.files?.videoUrl?.[0]?.filename
-      ? getUploadUrl(req.files.videoUrl[0].filename)
-      : body.videoUrl || null;
+
+    const trailerUrl = body.trailerUrl || null;
+    const videoUrl = body.videoUrl || null;
 
     const categories =
       safeParseJSON(body.categories) ||
@@ -165,7 +175,9 @@ const createMovie = async (req, res) => {
             .map((s) => s.trim())
             .filter(Boolean)
         : []);
+
     const slots = safeParseJSON(body.slots) || [];
+
     const seatPrices = safeParseJSON(body.seatPrices) || {
       standard: Number(body.standard || 0),
       recliner: Number(body.recliner || 0),
@@ -175,65 +187,71 @@ const createMovie = async (req, res) => {
     const directors = safeParseJSON(body.directors) || [];
     const producers = safeParseJSON(body.producers) || [];
 
-    const attachFiles = (
-      filesArrName,
-      targetArr,
-      toFilename = (f) => getUploadUrl(f)
-    ) => {
-      if (!req.files?.[filesArrName]) return;
-      req.files[filesArrName].forEach((file, idx) => {
-        if (targetArr[idx]) targetArr[idx].file = toFilename(file.filename);
-        else targetArr[idx] = { name: "", file: toFilename(file.filename) };
-      });
-    };
-    attachFiles("castFiles", cast);
-    attachFiles("directorFiles", directors);
-    attachFiles("producerFiles", producers);
 
-    // latest trailer
-    const latestTrailerBody = safeParseJSON(body.latestTrailer) || {};
-    if (req.files?.ltThumbnail?.[0]?.filename)
-      latestTrailerBody.thumbnail = req.files.ltThumbnail[0].filename;
-    else if (body.ltThumbnail) {
-      const fn = extractFilenameFromUrl(body.ltThumbnail);
-      latestTrailerBody.thumbnail = fn ? fn : body.ltThumbnail;
-    }
-    if (body.ltVideoUrl) latestTrailerBody.videoId = body.ltVideoUrl;
-    if (body.ltUrl) latestTrailerBody.url = body.ltUrl;
-    if (body.ltTitle) latestTrailerBody.title = body.ltTitle;
+    
+/* --------------------------------------------------
+   🔥 FORCE latestTrailer FOR latestTrailers TYPE
+-------------------------------------------------- */
+let latestTrailer = null;
 
-    latestTrailerBody.directors = latestTrailerBody.directors || [];
-    latestTrailerBody.producers = latestTrailerBody.producers || [];
-    latestTrailerBody.singers = latestTrailerBody.singers || [];
+if (body.type === "latestTrailers") {
+  latestTrailer = {};
 
-    const attachLtFiles = (fieldName, arrName) => {
-      if (!req.files?.[fieldName]) return;
-      req.files[fieldName].forEach((file, idx) => {
-        const filename = file.filename;
-        if (latestTrailerBody[arrName][idx])
-          latestTrailerBody[arrName][idx].file = filename;
-        else latestTrailerBody[arrName][idx] = { name: "", file: filename };
-      });
-    };
-    attachLtFiles("ltDirectorFiles", "directors");
-    attachLtFiles("ltProducerFiles", "producers");
-    attachLtFiles("ltSingerFiles", "singers");
+  // thumbnail
+  if (req.files?.ltThumbnail?.[0]?.filename) {
+    latestTrailer.thumbnail = req.files.ltThumbnail[0].filename;
+  }
 
-    latestTrailerBody.directors = buildLatestTrailerPeople(
-      latestTrailerBody.directors
-    );
-    latestTrailerBody.producers = buildLatestTrailerPeople(
-      latestTrailerBody.producers
-    );
-    latestTrailerBody.singers = buildLatestTrailerPeople(
-      latestTrailerBody.singers
-    );
+  // ✅ VIDEO URL – MAIN FIX
+  const videoUrl =
+    body.ltVideoUrl ||
+    body.videoUrl ||
+    (body.latestTrailer &&
+      JSON.parse(body.latestTrailer)?.videoId);
+
+  if (videoUrl) {
+    latestTrailer.videoUrl = videoUrl;
+  }
+
+  // title
+  latestTrailer.title = body.movieName || "";
+
+  // optional: parse extra data
+  if (body.latestTrailer) {
+    const parsed = JSON.parse(body.latestTrailer);
+
+    latestTrailer.genres = parsed.genres || [];
+    latestTrailer.duration = parsed.duration || {};
+    latestTrailer.year = parsed.year || null;
+    latestTrailer.rating = parsed.rating || null;
+    latestTrailer.description = parsed.description || "";
+latestTrailer.directors = attachLatestTrailerFiles(
+  parsed.directors,
+  req.files?.ltDirectorFiles
+);
+
+latestTrailer.producers = attachLatestTrailerFiles(
+  parsed.producers,
+  req.files?.ltProducerFiles
+);
+
+latestTrailer.singers = attachLatestTrailerFiles(
+  parsed.singers,
+  req.files?.ltSingerFiles
+);
+
+  }
+}
+
 
     const auditoriumValue =
       typeof body.auditorium === "string" && body.auditorium.trim()
-        ? String(body.auditorium).trim()
+        ? body.auditorium.trim()
         : "Audi 1";
 
+    /* --------------------------------------------------
+       SAVE MOVIE
+    -------------------------------------------------- */
     const doc = new Movie({
       _id: new mongoose.Types.ObjectId(),
       type: body.type || "normal",
@@ -250,14 +268,15 @@ const createMovie = async (req, res) => {
       directors,
       producers,
       story: body.story || "",
-      latestTrailer: latestTrailerBody,
+      latestTrailer, // ✅ FIXED
       auditorium: auditoriumValue,
     });
 
     const saved = await doc.save();
+
     return res.status(201).json({
       success: true,
-      message: "Movie created.",
+      message: "Movie created successfully",
       data: saved,
     });
   } catch (err) {
@@ -268,6 +287,7 @@ const createMovie = async (req, res) => {
     });
   }
 };
+
 
 // Get all mcvies
 
@@ -283,8 +303,8 @@ const getMovies = async (req, res) => {
       latestTrailer,
     } = req.query;
     let filter = {};
-    if (typeof category === "string" && category.trim())
-      filter.categories = { $in: [category.trim()] };
+    if (typeof categories  === "string" && categories.trim())
+      filter.categories = { $in: [categories.trim()] };
     if (typeof type === "string" && type.trim()) filter.type = type.trim();
     if (typeof search === "string" && search.trim()) {
       const q = search.trim();
@@ -343,16 +363,18 @@ const getMovieById = async (req,res) =>{
             message:"Movie not found"
           });
 
-          const object = normalizeItemForOutput(item);
-          // getMovieById
-    if (item.type === "latestTrailers" && item.latestTrailer) {
-      const lt = item.latestTrailer;
-      obj.genres = obj.genres || lt.genres || [];
-      obj.year = obj.year || lt.year || null;
-      obj.rating = obj.rating || lt.rating || null;
-      obj.duration = obj.duration || lt.duration || null;
-      obj.description = obj.description || lt.description || lt.excerpt || obj.description || "";
-    }
+    const object = normalizeItemForOutput(item);
+
+if (item.type === "latestTrailers" && item.latestTrailer) {
+  const lt = item.latestTrailer;
+  object.genres = object.genres || lt.genres || [];
+  object.year = object.year || lt.year || null;
+  object.rating = object.rating || lt.rating || null;
+  object.duration = object.duration || lt.duration || null;
+  object.description =
+    object.description || lt.description || lt.excerpt || "";
+}
+
     return res.json({sucess:true, item:object});
     } 
     catch (err) {

@@ -304,29 +304,29 @@ function AddPage() {
 
     if (movieType === "latestTrailers") {
   const latestTrailerObj = {
-    title: movieName,
-    genres: categories,
-    duration: {
-      hours: Number(ltDurationHours) || 0,
-      minutes: Number(ltDurationMinutes) || 0,
-    },
-    year: Number(ltYear),
-    rating: Number(rating),
-    description: ltDescription,
-    videoId: ltVideoUrl, // still ok
-    directors: ltDirectorImages.map((d) => ({
-      name: d.name || "",
-      file: d.file?.name || null,
-    })),
-    producers: ltProducerImages.map((p) => ({
-      name: p.name || "",
-      file: p.file?.name || null,
-    })),
-    singers: ltSingerImages.map((s) => ({
-      name: s.name || "",
-      file: s.file?.name || null,
-    })),
-  };
+  title: movieName,
+  genres: categories,
+  duration: {
+    hours: Number(ltDurationHours) || 0,
+    minutes: Number(ltDurationMinutes) || 0,
+  },
+  year: Number(ltYear),
+  rating: Number(rating),
+  description: ltDescription,
+  directors: ltDirectorImages.map((d) => ({
+    name: d.name || "",
+    file: d.file?.name || null,
+  })),
+  producers: ltProducerImages.map((p) => ({
+    name: p.name || "",
+    file: p.file?.name || null,
+  })),
+  singers: ltSingerImages.map((s) => ({
+    name: s.name || "",
+    file: s.file?.name || null,
+  })),
+};
+
 
   form.append("movieName", movieName);
   form.append("latestTrailer", JSON.stringify(latestTrailerObj));
