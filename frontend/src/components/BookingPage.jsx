@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {bookingsPageStyles, formatTime , formatDuration} from '../assets/dummyStyles'
@@ -461,7 +462,7 @@ const closeModel = () => setScannedDetails(null);
         >
           <div
             className={bookingsPageStyles.modalBackdrop}
-            onClick={closeModal}
+            onClick={closeModel}
             aria-hidden="true"
           />
           <div className={bookingsPageStyles.modalContent}>
@@ -493,7 +494,7 @@ const closeModel = () => setScannedDetails(null);
               </div>
 
               <button
-                onClick={closeModal}
+                onClick={closeModel}
                 className={bookingsPageStyles.modalCloseButton}
                 aria-label="Close scanned details"
               >
