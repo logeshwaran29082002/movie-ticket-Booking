@@ -298,7 +298,7 @@ const getMovies = async (req, res) => {
       type,
       sort = "-createdAt",
       page = 1,
-      limit = 12,
+      limit = 520,
       search,
       latestTrailer,
     } = req.query;

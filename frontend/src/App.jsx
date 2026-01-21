@@ -11,6 +11,7 @@ import MovieDetailPages from "./pages/MovieDetailPages";
 import MovieDetailsPageHome from "./pages/MovieDetailsPageHome";
 import SeatSelectors from "./pages/SeatSelectors";
 import SeatSelectorsHome from "./components/SeatSelectorsHome";
+import VerifyPaymentPage from "../VerifyPaymentPage";
 
 /*
  * ScrollToTop component:
@@ -103,6 +104,8 @@ function App() {
             path="/movie/:id/seat-selector/:slot"
             element={<SeatSelectorsHome />}
           />
+          <Route path="/success" element={<VerifyPaymentPage/>}/>
+          <Route path="/cancel" element={<VerifyPaymentPage/>}/>
         </Routes>
       </div>
     </>
