@@ -3,7 +3,7 @@ import { styles2, fontStyles } from "../assets/dummyStyles";
 import axios from "axios";
 import { Clock, Film, Ticket, X } from "lucide-react";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const formatSlot = (date) => {
   if (!(date instanceof Date)) date = new Date(date);

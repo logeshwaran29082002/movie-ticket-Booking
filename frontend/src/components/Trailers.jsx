@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react"; // ✅ MISSING IMPORT FIXED
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 const PLACEHOLDER_THUMB =
   "https://via.placeholder.com/800x450?text=No+Thumbnail";
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { moviesPageStyles } from "../assets/dummyStyles";
 import { Link } from "react-router-dom"; // ✅ FIXED
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const COLLAPSE_COUNT = 12;
 const PLACEHOLDER = "https://via.placeholder.com/400x600?text=No+Poster";

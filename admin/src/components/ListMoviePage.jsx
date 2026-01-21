@@ -2,21 +2,20 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { styles5, customStyles } from "../assets/dummyStyles";
 import axios from "axios";
 import { Calendar, Film, Play as PlayIcon, Star, Ticket, Search, X , Clock , Play} from "lucide-react";
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function getImageUrl(maybe) {
-  if (!maybe) return null;
-  if (typeof maybe !== "string") return null;
+  if (!maybe || typeof maybe !== "string") return null;
 
-  // ✅ already full URL → return as-is
+  // already full URL
   if (maybe.startsWith("http://") || maybe.startsWith("https://")) {
     return maybe;
   }
 
-  // only for filename
   const cleaned = maybe.replace(/^uploads\//, "");
-  return `http://localhost:5000/uploads/${cleaned}`;
+  return `${import.meta.env.VITE_API_BASE}/uploads/${cleaned}`;
 }
+
 
 
 function ListMoviePage() {

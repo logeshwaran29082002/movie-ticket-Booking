@@ -17,7 +17,7 @@ import {
   Upload,
 } from "lucide-react";
 
-const API_Host = "http://localhost:5000";
+const API_Host = import.meta.env.VITE_API_BASE;
 function AddPage() {
   const [movieName, setMovieName] = useState("");
   const [categories, setCategories] = useState([]);

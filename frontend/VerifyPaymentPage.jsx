@@ -33,7 +33,7 @@ function VerifyPaymentPage() {
       try {
         setStatusMsg("Confirming Payment with server...");
 
-        const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
         const res = await axios.get(
           `${API_BASE}/api/bookings/confirm-payment`,
           {
