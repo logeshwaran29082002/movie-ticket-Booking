@@ -4,7 +4,9 @@ const Movie = require("../models/movieModel");
 const stripe = require("stripe");
 require("dotenv").config();
 
-const CLIENT_URL = "http://localhost:5173";
+const CLIENT_URL = process.env.CLIENT_URL;
+
+
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_API_VERSION = "2022-11-15";
 const RECLINER_ROWS = new Set(["D", "E"]);

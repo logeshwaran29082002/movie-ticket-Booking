@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function VerifyPaymentPage() {
   const [statusMsg, setStatusMsg] = useState("Verifying Payment...");
@@ -33,7 +34,6 @@ function VerifyPaymentPage() {
       try {
         setStatusMsg("Confirming Payment with server...");
 
-const API_BASE = import.meta.env.VITE_API_BASE;
         const res = await axios.get(
           `${API_BASE}/api/bookings/confirm-payment`,
           {
