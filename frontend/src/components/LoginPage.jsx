@@ -3,7 +3,11 @@ import { loginStyles } from "../assets/dummyStyles";
 import { toast, ToastContainer } from "react-toastify";
 import { ArrowLeft, Film, Eye, EyeOff, Clapperboard, Popcorn } from "lucide-react";
 import axios from 'axios'
-const API_BASE = import.meta.env.VITE_API_BASE;
+const API_BASE = `${import.meta.env.VITE_API_BASE}/api/auth`;
+
+axios.post(`${API_BASE}/login`, payload, {
+  headers: { "Content-Type": "application/json" }
+});
 
 function LoginPage() {
   const [formData, setFormData] = useState({
