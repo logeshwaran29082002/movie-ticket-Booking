@@ -313,18 +313,18 @@ function AddPage() {
   year: Number(ltYear),
   rating: Number(rating),
   description: ltDescription,
-  directors: ltDirectorImages.map((d) => ({
-    name: d.name || "",
-    file: d.file?.name || null,
-  })),
-  producers: ltProducerImages.map((p) => ({
-    name: p.name || "",
-    file: p.file?.name || null,
-  })),
-  singers: ltSingerImages.map((s) => ({
-    name: s.name || "",
-    file: s.file?.name || null,
-  })),
+  directors: ltDirectorImages.map(d => ({
+  name: d.name || ""
+})),
+
+  producers: ltProducerImages.map(p => ({
+  name: p.name || ""
+})),
+
+singers: ltSingerImages.map(s => ({
+  name: s.name || ""
+}))
+
 };
 
 
@@ -368,31 +368,31 @@ function AddPage() {
       form.append(
         "cast",
         JSON.stringify(
-          castImages.map((c) => ({
-            name: c.name || "",
-            role: c.role || "",
-            file: c.file ? c.file.name : null,
-          }))
+         castImages.map(c => ({
+  name: c.name,
+  role: c.role
+}))
+
         )
       );
       form.append(
         "directors",
         JSON.stringify(
-          directorImages.map((d) => ({
-            name: d.name || "",
-            file: d.file ? d.file.name : null,
-          }))
+          directorImages.map(d => ({
+  name: d.name
+}))
+
         )
       );
-      form.append(
-        "producers",
-        JSON.stringify(
-          producerImages.map((p) => ({
-            name: p.name || "",
-            file: p.file ? p.file.name : null,
-          }))
-        )
-      );
+     form.append(
+  "producers",
+  JSON.stringify(
+    producerImages.map((p) => ({
+      name: p.name || ""
+    }))
+  )
+);
+
       form.append("story", story || "");
 
       appendFilesToForm(form, "castFiles", castImages);
