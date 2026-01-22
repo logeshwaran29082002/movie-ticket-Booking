@@ -22,7 +22,10 @@ const attachLatestTrailerFiles = (people = [], files = []) => {
   return (people || []).map((p, i) => ({
     name: p.name || "",
     role: p.role || "",
-    file: files?.[i]?.filename || null,
+    file: files?.[i]?.filename
+  ? getUploadUrl(files[i].filename)
+  : null,
+
   }));
 };
 
@@ -82,13 +85,14 @@ const normalizeLatestPersonFilename = (value) => {
 // Converts a person object into a {name, role, preview} format
 const personToPreview = (p) => {
   if (!p) return { name: "", role: "", preview: null };
-  const candidate = p.preview || p.file || p.image || p.url || null;
+
   return {
     name: p.name || "",
     role: p.role || "",
-    preview: candidate ? getUploadUrl(candidate) : null,
+    preview: p.file ? getUploadUrl(p.file) : null,
   };
 };
+
 
 /* ---------------------- shared transformers ---------------------- */
 const buildLatestTrailerPeople = (arr = []) =>
@@ -184,10 +188,26 @@ const createMovie = async (req, res) => {
       recliner: Number(body.recliner || 0),
     };
 
-    const cast = safeParseJSON(body.cast) || [];
-    const directors = safeParseJSON(body.directors) || [];
-    const producers = safeParseJSON(body.producers) || [];
+   const cast =
+  (safeParseJSON(body.cast) || []).map((c, i) => ({
+    name: c.name || "",
+    role: c.role || "",
+    file: req.files?.castFiles?.[i]?.filename || null,
+  }));
 
+const directors =
+  (safeParseJSON(body.directors) || []).map((d, i) => ({
+    name: d.name || "",
+    role: d.role || "",
+    file: req.files?.directorFiles?.[i]?.filename || null,
+  }));
+
+const producers =
+  (safeParseJSON(body.producers) || []).map((p, i) => ({
+    name: p.name || "",
+    role: p.role || "",
+    file: req.files?.producerFiles?.[i]?.filename || null,
+  }));
 
     
 /* --------------------------------------------------
