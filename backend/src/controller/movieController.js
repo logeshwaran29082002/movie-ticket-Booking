@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Movie = require("../models/movieModel");
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config();
 
 
 const API_BASE = process.env.API_BASE;
