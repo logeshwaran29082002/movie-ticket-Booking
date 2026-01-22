@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = process.env.API_BASE;
 
 /* ---------------------- small helpers ---------------------- */
 // Builds a full upload URL from a filename or returns null if invalid
