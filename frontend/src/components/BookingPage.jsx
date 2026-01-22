@@ -210,19 +210,13 @@ function BookingPage() {
         const seatsList = (b.seats || [])
           .map((s) => (typeof s === "string" ? s : s.id || ""))
           .filter(Boolean);
-        const payload = JSON.stringify({
-          bookingId: b.id,
-          title: b.title,
-          time: formatTime(b.slotTime),
-          auditorium: b.auditorium,
-          seats: seatsList,
-        });
+   const payload = `${window.location.origin}/ticket/${b.id}`;
         try {
-          const url = await QRCode.toDataURL(payload, {
-            errorCorrectionLevel: "M",
-            margin: 1,
-            scale: 6,
-          });
+        const url = await QRCode.toDataURL(payload, {
+  errorCorrectionLevel: "M",
+  margin: 1,
+  scale: 6,
+  });
           map[b.id] = { url, payload };
         } catch (e) {
           console.error("QR error for", b.id, e);
@@ -246,20 +240,13 @@ function BookingPage() {
     }));
 
   // to scan the QR and get detailes
-  const handleQrScan = (bookingId) => {
-    const entry = qrs[bookingId];
-    if (!entry || !entry.payload) return;
-    try {
-      const parsed = JSON.parse(entry.payload);
-      setExpanded((prev) => ({ ...prev, [bookingId]: true }));
-      const el = document.getElementById(`booking-card-${bookingId}`);
-      if (el && el.scrollIntoView)
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      setScannedDetails({ bookingId, ...parsed });
-    } catch (e) {
-      console.error("Failed to parse QR payload", e);
-    }
-  };
+const handleQrScan = (bookingId) => {
+  const entry = qrs[bookingId];
+  if (!entry || !entry.payload) return;
+
+  window.open(entry.payload, "_blank");
+};
+
 
   const closeModel = () => setScannedDetails(null);
 
