@@ -107,8 +107,6 @@ function App() {
           />
           <Route path="/success" element={<VerifyPaymentPage/>}/>
           <Route path="/cancel" element={<VerifyPaymentPage/>}/>
-          <Route path="/ticket/:id" element={<Ticket />} />
-
         </Routes>
       </div>
     </>
