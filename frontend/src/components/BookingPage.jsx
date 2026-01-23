@@ -7,7 +7,7 @@ import {
 } from "../assets/dummyStyles";
 import QRCode from "qrcode";
 import axios from "axios";
-import { Film, Clock, MapPin, QrCode, ChevronDown } from "lucide-react";
+import { Film, Clock, MapPin, QrCode, ChevronDown, X } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -240,12 +240,16 @@ function BookingPage() {
     }));
 
   // to scan the QR and get detailes
-const handleQrScan = (bookingId) => {
-  const entry = qrs[bookingId];
-  if (!entry || !entry.payload) return;
-
-  window.open(entry.payload, "_blank");
+const handleQrScan = (booking) => {
+  setScannedDetails({
+    title: booking.title,
+    bookingId: booking.id,
+    time: formatTime(booking.slotTime),
+    auditorium: booking.auditorium,
+seats: (booking.seats || []).map(s => s.id || s),
+  });
 };
+
 
 
   const closeModel = () => setScannedDetails(null);
@@ -407,9 +411,9 @@ const handleQrScan = (bookingId) => {
                             className={bookingsPageStyles.qrImage}
                             role="button"
                             tabIndex={0}
-                            onClick={() => handleQrScan(b.id)}
+                            onClick={() => handleQrScan(b)}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter") handleQrScan(b.id);
+                              if (e.key === "Enter") handleQrScan(b);
                             }}
                           />
                         ) : (
