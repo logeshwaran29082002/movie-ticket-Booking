@@ -12,7 +12,6 @@ import MovieDetailsPageHome from "./pages/MovieDetailsPageHome";
 import SeatSelectors from "./pages/SeatSelectors";
 import SeatSelectorsHome from "./components/SeatSelectorsHome";
 import VerifyPaymentPage from "../VerifyPaymentPage";
-import Ticket from "./pages/Ticket";
 
 /*
  * ScrollToTop component:
