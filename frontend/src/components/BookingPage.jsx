@@ -7,7 +7,7 @@ import {
 } from "../assets/dummyStyles";
 import QRCode from "qrcode";
 import axios from "axios";
-import { Film, Clock, MapPin, QrCode, ChevronDown, X } from "lucide-react";
+import { Film, Clock, MapPin, QrCode, ChevronDown , X} from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -210,13 +210,13 @@ function BookingPage() {
         const seatsList = (b.seats || [])
           .map((s) => (typeof s === "string" ? s : s.id || ""))
           .filter(Boolean);
-const payload = `http://172.31.7.130:5173/ticket/${b.id}`;
+   const payload = `${window.location.origin}/ticket/${b.id}`;
         try {
-          const url = await QRCode.toDataURL(payload, {
-            errorCorrectionLevel: "M",
-            margin: 1,
-            scale: 6,
-          });
+        const url = await QRCode.toDataURL(payload, {
+  errorCorrectionLevel: "M",
+  margin: 1,
+  scale: 6,
+  });
           map[b.id] = { url, payload };
         } catch (e) {
           console.error("QR error for", b.id, e);
@@ -240,15 +240,13 @@ const payload = `http://172.31.7.130:5173/ticket/${b.id}`;
     }));
 
   // to scan the QR and get detailes
-  const handleQrScan = (booking) => {
-    setScannedDetails({
-      title: booking.title,
-      bookingId: booking.id,
-      time: formatTime(booking.slotTime),
-      auditorium: booking.auditorium,
-      seats: (booking.seats || []).map((s) => s.id || s),
-    });
-  };
+const handleQrScan = (bookingId) => {
+  const entry = qrs[bookingId];
+  if (!entry || !entry.payload) return;
+
+  window.open(entry.payload, "_blank");
+};
+
 
   const closeModel = () => setScannedDetails(null);
 
@@ -409,16 +407,9 @@ const payload = `http://172.31.7.130:5173/ticket/${b.id}`;
                             className={bookingsPageStyles.qrImage}
                             role="button"
                             tabIndex={0}
-                            onClick={(e) => {
-                              e.preventDefault(); // 🔴 link open ஆகாம stop
-                              e.stopPropagation(); // 🔴 extra bubbling stop
-                              handleQrScan(b); // ✅ modal open
-                            }}
+                            onClick={() => handleQrScan(b.id)}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                handleQrScan(b);
-                              }
+                              if (e.key === "Enter") handleQrScan(b.id);
                             }}
                           />
                         ) : (
