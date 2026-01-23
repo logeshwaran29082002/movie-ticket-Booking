@@ -210,13 +210,13 @@ function BookingPage() {
         const seatsList = (b.seats || [])
           .map((s) => (typeof s === "string" ? s : s.id || ""))
           .filter(Boolean);
-   const payload = `${window.location.origin}/ticket/${b.id}`;
+        const payload = `${window.location.origin}/ticket/${b.id}`;
         try {
-        const url = await QRCode.toDataURL(payload, {
-  errorCorrectionLevel: "M",
-  margin: 1,
-  scale: 6,
-  });
+          const url = await QRCode.toDataURL(payload, {
+            errorCorrectionLevel: "M",
+            margin: 1,
+            scale: 6,
+          });
           map[b.id] = { url, payload };
         } catch (e) {
           console.error("QR error for", b.id, e);
@@ -240,17 +240,15 @@ function BookingPage() {
     }));
 
   // to scan the QR and get detailes
-const handleQrScan = (booking) => {
-  setScannedDetails({
-    title: booking.title,
-    bookingId: booking.id,
-    time: formatTime(booking.slotTime),
-    auditorium: booking.auditorium,
-seats: (booking.seats || []).map(s => s.id || s),
-  });
-};
-
-
+  const handleQrScan = (booking) => {
+    setScannedDetails({
+      title: booking.title,
+      bookingId: booking.id,
+      time: formatTime(booking.slotTime),
+      auditorium: booking.auditorium,
+      seats: (booking.seats || []).map((s) => s.id || s),
+    });
+  };
 
   const closeModel = () => setScannedDetails(null);
 
@@ -411,9 +409,16 @@ seats: (booking.seats || []).map(s => s.id || s),
                             className={bookingsPageStyles.qrImage}
                             role="button"
                             tabIndex={0}
-                            onClick={() => handleQrScan(b)}
+                            onClick={(e) => {
+                              e.preventDefault(); // 🔴 link open ஆகாம stop
+                              e.stopPropagation(); // 🔴 extra bubbling stop
+                              handleQrScan(b); // ✅ modal open
+                            }}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter") handleQrScan(b);
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleQrScan(b);
+                              }
                             }}
                           />
                         ) : (
