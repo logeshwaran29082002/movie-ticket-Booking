@@ -241,11 +241,18 @@ function BookingPage() {
 
   // to scan the QR and get detailes
 const handleQrScan = (bookingId) => {
-  const entry = qrs[bookingId];
-  if (!entry || !entry.payload) return;
+  const booking = bookings.find(b => b.id === bookingId);
+  if (!booking) return;
 
-  window.open(entry.payload, "_blank");
+  setScannedDetails({
+    title: booking.title,
+    bookingId: booking.id,
+    time: formatTime(booking.slotTime),
+    auditorium: booking.auditorium,
+    seats: booking.seats.map(s => s.id),
+  });
 };
+
 
 
   const closeModel = () => setScannedDetails(null);
