@@ -4,7 +4,7 @@ const upload = require("../utils/multer");
 
 const movieRouter = express.Router();
 
-router.post("/", upload.single("poster"), createMovie);
+movieRouter.post("/", upload.single("poster"), createMovie);
 movieRouter.get("/", getMovies);
 movieRouter.get("/:id", getMovieById);
 movieRouter.delete("/:id", deleteMovie);
