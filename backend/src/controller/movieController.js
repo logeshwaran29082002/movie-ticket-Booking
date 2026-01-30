@@ -274,7 +274,7 @@ const doc = new Movie({
 };
 
 
-// Get all mcvies
+// Get all movies
 
 const getMovies = async (req, res) => {
   try {
@@ -316,7 +316,7 @@ const getMovies = async (req, res) => {
 
     const normalized = (items || []).map(normalizeItemForOutput);
     return res.json({
-        sucess:true,
+        success:true,
         total,
         page:pg,
         limit: lim,
@@ -337,7 +337,7 @@ const getMovieById = async (req,res) =>{
         const {id} = req.params;
         if(!id){
             return res.status(404).json({
-                sucess:false,
+                success:false,
                 message: 'ID is required.'
             })      
           }
@@ -360,7 +360,7 @@ if (item.type === "latestTrailers" && item.latestTrailer) {
     object.description || lt.description || lt.excerpt || "";
 }
 
-    return res.json({sucess:true, item:object});
+    return res.json({success:true, item:object});
     } 
     catch (err) {
    
