@@ -15,14 +15,12 @@ const getUploadUrl = (val) => {
 
 
 const attachLatestTrailerFiles = (people = [], files = []) => {
-  return (people || []).map((p, i) => ({
-    name: p.name || "",
-    role: p.role || "",
-  file: files?.[i]?.path
-  ? getUploadUrl(files[i].path)
-  : null,
+  if (!Array.isArray(people)) return [];
 
-
+  return people.map((p, i) => ({
+    name: p?.name || "",
+    role: p?.role || "",
+    file: files?.[i]?.path || null,
   }));
 };
 
@@ -114,6 +112,8 @@ obj.trailerUrl =
 
 // Create a movie
 const createMovie = async (req, res) => {
+  console.log("BODY =>", req.body);
+
   try {
     const body = req.body || {};
 
@@ -170,6 +170,9 @@ const producers =
 let latestTrailer = null;
 
 if (body.type === "latestTrailers") {
+  console.log("BODY:", body);
+console.log("FILES:", req.files);
+
   latestTrailer = {};
 
   // thumbnail
@@ -178,11 +181,12 @@ if (body.type === "latestTrailers") {
   }
 
   // ✅ VIDEO URL – MAIN FIX
-  const videoUrl =
-    body.ltVideoUrl ||
-    body.videoUrl ||
-    (body.latestTrailer &&
-      JSON.parse(body.latestTrailer)?.videoId);
+ const videoUrl =
+  body.ltVideoUrl ||
+  body.videoUrl ||
+  (body.latestTrailer &&
+    JSON.parse(body.latestTrailer)?.videoId);
+
 
   if (videoUrl) {
     latestTrailer.videoUrl = videoUrl;
@@ -194,6 +198,7 @@ if (body.type === "latestTrailers") {
   // optional: parse extra data
   if (body.latestTrailer) {
 const parsed = safeParseJSON(body.latestTrailer) || {};
+console.log("PARSED LATEST TRAILER:", parsed);
 
 
     latestTrailer.genres = parsed.genres || [];
@@ -228,25 +233,31 @@ latestTrailer.singers = attachLatestTrailerFiles(
     /* --------------------------------------------------
        SAVE MOVIE
     -------------------------------------------------- */
-    const doc = new Movie({
-      _id: new mongoose.Types.ObjectId(),
-      type: body.type || "normal",
-      movieName: body.movieName || body.title || "",
-      categories,
-      poster: posterUrl,
-      trailerUrl,
-      videoUrl,
-      rating: Number(body.rating) || 0,
-      duration: Number(body.duration) || 0,
-      slots,
-      seatPrices,
-      cast,
-      directors,
-      producers,
-      story: body.story || "",
-      latestTrailer, // ✅ FIXED
-      auditorium: auditoriumValue,
-    });
+ if (!body.movieName || !body.categories || !body.rating || !body.duration) {
+  return res.status(400).json({
+    success: false,
+    message: "movieName, categories, rating, duration required"
+  });
+}
+
+const doc = new Movie({
+  type: body.type || "normal",
+  movieName: body.movieName,
+  categories: categories,
+  poster: posterUrl,
+  trailerUrl: trailerUrl,
+  videoUrl: videoUrl,
+  rating: Number(body.rating),
+  duration: Number(body.duration),
+  slots: slots,
+  seatPrices: seatPrices,
+  cast: cast,
+  directors: directors,
+  producers: producers,
+  story: body.story,
+  latestTrailer: latestTrailer,
+  auditorium: auditoriumValue,
+});
 
     const saved = await doc.save();
 
