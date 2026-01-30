@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Movie = require("../models/movieModel");
-const cloudinary = require("../utils/cloudinary");
 require("dotenv").config();
 
 
@@ -10,44 +9,27 @@ const API_BASE = process.env.API_BASE;
 // Builds a full upload URL from a filename or returns null if invalid
 const getUploadUrl = (val) => {
   if (!val) return null;
-  if (typeof val === "string" && /^(https?:\/\/)/.test(val)) return val;
-  const cleaned = String(val).replace(/^uploads\//, "");
-  if (!cleaned) return null;
-  return `${API_BASE}/uploads/${cleaned}`;
+  return val;
 };
+
 
 
 const attachLatestTrailerFiles = (people = [], files = []) => {
   return (people || []).map((p, i) => ({
     name: p.name || "",
     role: p.role || "",
-    file: files?.[i]?.filename
-  ? getUploadUrl(files[i].filename)
+  file: files?.[i]?.path
+  ? getUploadUrl(files[i].path)
   : null,
+
 
   }));
 };
 
 
-// Extracts the filename from a URL or upload path
-const extractFilenameFromUrl = (u) => {
-  if (!u || typeof u !== "string") return null;
-  const parts = u.split("/uploads/");
-  if (parts[1]) return parts[1];
-  if (u.startsWith("uploads/")) return u.replace(/^uploads\//, "");
-  return /^[^\/]+\.[a-zA-Z0-9]+$/.test(u) ? u : null;
-};
 
-// Deletes a file from the uploads folder if it exists
-const tryUnlinkUploadUrl = (urlOrFilename) => {
-  const fn = extractFilenameFromUrl(urlOrFilename);
-  if (!fn) return;
-  const filepath = path.join(process.cwd(), "uploads", fn);
-  fs.unlink(filepath, (err) => {
-    if (err)
-      console.warn("Failed to unlink file", filepath, err?.message || err);
-  });
-};
+
+
 
 // Safely parses JSON and returns null on failure
 const safeParseJSON = (v) => {
@@ -60,26 +42,7 @@ const safeParseJSON = (v) => {
   }
 };
 
-// Normalizes a person file value to a simple filename
-const normalizeLatestPersonFilename = (value) => {
-  if (!value) return null;
-  if (typeof value === "string") {
-    const fn = extractFilenameFromUrl(value);
-    return fn || value;
-  }
-  if (typeof value === "object") {
-    const candidate =
-      value.filename ||
-      value.path ||
-      value.url ||
-      value.file ||
-      value.image ||
-      value.preview ||
-      null;
-    return candidate ? normalizeLatestPersonFilename(candidate) : null;
-  }
-  return null;
-};
+
 
 // Converts a person object into a {name, role, preview} format
 const personToPreview = (p) => {
@@ -92,16 +55,6 @@ const personToPreview = (p) => {
   };
 };
 
-
-/* ---------------------- shared transformers ---------------------- */
-const buildLatestTrailerPeople = (arr = []) =>
-  (arr || []).map((p) => ({
-    name: (p && p.name) || "",
-    role: (p && p.role) || "",
-    file: normalizeLatestPersonFilename(
-      p && (p.file || p.preview || p.url || p.image)
-    ),
-  }));
 
 const enrichLatestTrailerForOutput = (lt = {}) => {
   const copy = { ...lt };
@@ -164,7 +117,8 @@ const createMovie = async (req, res) => {
   try {
     const body = req.body || {};
 
-   const posterUrl = req.file?.path || null;
+const posterUrl = req.files?.poster?.[0]?.path || null;
+
 
 
     const trailerUrl = body.trailerUrl || null;
@@ -190,21 +144,21 @@ const createMovie = async (req, res) => {
   (safeParseJSON(body.cast) || []).map((c, i) => ({
     name: c.name || "",
     role: c.role || "",
-    file: req.files?.castFiles?.[i]?.filename || null,
+    file: req.files?.castFiles?.[i]?.path|| null,
   }));
 
 const directors =
   (safeParseJSON(body.directors) || []).map((d, i) => ({
     name: d.name || "",
     role: d.role || "",
-    file: req.files?.directorFiles?.[i]?.filename || null,
+    file: req.files?.directorFiles?.[i]?.path || null,
   }));
 
 const producers =
   (safeParseJSON(body.producers) || []).map((p, i) => ({
     name: p.name || "",
     role: p.role || "",
-    file: req.files?.producerFiles?.[i]?.filename || null,
+    file: req.files?.producerFiles?.[i]?.path || null,
   }));
 
     
@@ -217,8 +171,8 @@ if (body.type === "latestTrailers") {
   latestTrailer = {};
 
   // thumbnail
-  if (req.files?.ltThumbnail?.[0]?.filename) {
-    latestTrailer.thumbnail = req.files.ltThumbnail[0].filename;
+  if (req.files?.ltThumbnail?.[0]?.path) {
+    latestTrailer.thumbnail = req.files.ltThumbnail[0].path;
   }
 
   // ✅ VIDEO URL – MAIN FIX
@@ -407,49 +361,32 @@ if (item.type === "latestTrailers" && item.latestTrailer) {
    }
 }
 
-const deleteMovie = async (req,res) =>{
-    try {
-             const {id} = req.params;
-        if(!id){
-            return res.status(404).json({
-                sucess:false,
-                message: 'ID is required.'
-            })      
-          }
+const deleteMovie = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-          const m = await Movie.findById(id);
-          if(!m) return res.status(404).json({
-            success:false,
-            message:"Movie not found"
-          });
-       
-      //unlink main assets
-     
-      if(m.latestTrailer && m.latestTrailer.thumbnail) tryUnlinkUploadUrl(m.latestTrailer.thumbnail);
+    if (!id) {
+      return res.status(400).json({ success: false, message: "ID required" });
+    }
 
-     // unlink person files
-    [(m.cast || []), (m.directors || []), (m.producers || [])].forEach(arr =>
-      arr.forEach(p => { if (p && p.file) tryUnlinkUploadUrl(p.file); })
-    );
-
-    if (m.latestTrailer) {
-      ([...(m.latestTrailer.directors || []), ...(m.latestTrailer.producers || []), ...(m.latestTrailer.singers || [])])
-        .forEach(p => { if (p && p.file) tryUnlinkUploadUrl(p.file); });
+    const m = await Movie.findById(id);
+    if (!m) {
+      return res.status(404).json({ success: false, message: "Movie not found" });
     }
 
     await Movie.findByIdAndDelete(id);
-return res.json({
-    success:true,
-    message: "Movie Deleted"
-})
 
-    } catch (error) {
-        console.error('DeleteMovie Error:' , err);
-         return res.status(500).json({
-            success:false,
-            message: " Server Error"
-         })
-        
-    }
-}
+    return res.json({
+      success: true,
+      message: "Movie deleted successfully",
+    });
+  } catch (err) {
+    console.error("DeleteMovie Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
 module.exports = { createMovie,getMovies,getMovieById,deleteMovie};
