@@ -117,7 +117,11 @@ const createMovie = async (req, res) => {
   try {
     const body = req.body || {};
 
-const posterUrl = req.files?.poster?.[0]?.path || null;
+const posterUrl =
+  req.files && req.files.poster
+    ? req.files.poster[0].path
+    : null;
+
 
 
 
@@ -140,24 +144,22 @@ const posterUrl = req.files?.poster?.[0]?.path || null;
       recliner: Number(body.recliner || 0),
     };
 
-   const cast =
-  (safeParseJSON(body.cast) || []).map((c, i) => ({
+const cast =
+  safeParseJSON(body.cast || "[]").map((c, i) => ({
     name: c.name || "",
     role: c.role || "",
-    file: req.files?.castFiles?.[i]?.path|| null,
+    file: req.files?.castFiles?.[i]?.path || null,
   }));
 
 const directors =
-  (safeParseJSON(body.directors) || []).map((d, i) => ({
+  safeParseJSON(body.directors || "[]").map((d, i) => ({
     name: d.name || "",
-    role: d.role || "",
     file: req.files?.directorFiles?.[i]?.path || null,
   }));
 
 const producers =
-  (safeParseJSON(body.producers) || []).map((p, i) => ({
+  safeParseJSON(body.producers || "[]").map((p, i) => ({
     name: p.name || "",
-    role: p.role || "",
     file: req.files?.producerFiles?.[i]?.path || null,
   }));
 
