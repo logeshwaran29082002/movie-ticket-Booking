@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const Movie = require("../models/movieModel");
-const fs = require("fs");
-const path = require("path");
 require("dotenv").config();
 
 
@@ -165,9 +163,8 @@ const createMovie = async (req, res) => {
   try {
     const body = req.body || {};
 
-    const posterUrl = req.files?.poster?.[0]?.filename
-      ? getUploadUrl(req.files.poster[0].filename)
-      : body.poster || null;
+   const posterUrl = req.file?.path || null;
+
 
     const trailerUrl = body.trailerUrl || null;
     const videoUrl = body.videoUrl || null;
@@ -426,7 +423,7 @@ const deleteMovie = async (req,res) =>{
           });
        
       //unlink main assets
-      if(m.poster) tryUnlinkUploadUrl(m.poster);
+     
       if(m.latestTrailer && m.latestTrailer.thumbnail) tryUnlinkUploadUrl(m.latestTrailer.thumbnail);
 
      // unlink person files
