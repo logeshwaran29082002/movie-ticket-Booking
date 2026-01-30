@@ -144,24 +144,28 @@ const posterUrl =
       recliner: Number(body.recliner || 0),
     };
 
-const cast =
-  safeParseJSON(body.cast || "[]").map((c, i) => ({
-    name: c.name || "",
-    role: c.role || "",
-    file: req.files?.castFiles?.[i]?.path || null,
-  }));
+const castArray = safeParseJSON(body.cast) || [];
 
-const directors =
-  safeParseJSON(body.directors || "[]").map((d, i) => ({
-    name: d.name || "",
-    file: req.files?.directorFiles?.[i]?.path || null,
-  }));
+const cast = castArray.map((c, i) => ({
+  name: c?.name || "",
+  role: c?.role || "",
+  file: req.files?.castFiles?.[i]?.path || null,
+}));
 
-const producers =
-  safeParseJSON(body.producers || "[]").map((p, i) => ({
-    name: p.name || "",
-    file: req.files?.producerFiles?.[i]?.path || null,
-  }));
+
+const directorArray = safeParseJSON(body.directors) || [];
+
+const directors = directorArray.map((d, i) => ({
+  name: d?.name || "",
+  file: req.files?.directorFiles?.[i]?.path || null,
+}));
+const producerArray = safeParseJSON(body.producers) || [];
+
+const producers = producerArray.map((p, i) => ({
+  name: p?.name || "",
+  file: req.files?.producerFiles?.[i]?.path || null,
+}));
+
 
     
 /* --------------------------------------------------
@@ -170,8 +174,6 @@ const producers =
 let latestTrailer = null;
 
 if (body.type === "latestTrailers") {
-  console.log("BODY:", body);
-console.log("FILES:", req.files);
 
   latestTrailer = {};
 
@@ -180,13 +182,14 @@ console.log("FILES:", req.files);
     latestTrailer.thumbnail = req.files.ltThumbnail[0].path;
   }
 
-  // ✅ VIDEO URL – MAIN FIX
- const videoUrl =
-  body.ltVideoUrl ||
-  body.videoUrl ||
-  (body.latestTrailer &&
-    JSON.parse(body.latestTrailer)?.videoId);
+  // parse ONCE
+  const parsed = safeParseJSON(body.latestTrailer) || {};
 
+  // video url
+  const videoUrl =
+    body.ltVideoUrl ||
+    body.videoUrl ||
+    parsed?.videoId;
 
   if (videoUrl) {
     latestTrailer.videoUrl = videoUrl;
@@ -195,33 +198,27 @@ console.log("FILES:", req.files);
   // title
   latestTrailer.title = body.movieName || "";
 
-  // optional: parse extra data
-  if (body.latestTrailer) {
-const parsed = safeParseJSON(body.latestTrailer) || {};
-console.log("PARSED LATEST TRAILER:", parsed);
+  // meta
+  latestTrailer.genres = parsed.genres || [];
+  latestTrailer.duration = parsed.duration || {};
+  latestTrailer.year = parsed.year || null;
+  latestTrailer.rating = parsed.rating || null;
+  latestTrailer.description = parsed.description || "";
 
+  latestTrailer.directors = attachLatestTrailerFiles(
+    parsed.directors,
+    req.files?.ltDirectorFiles
+  );
 
-    latestTrailer.genres = parsed.genres || [];
-    latestTrailer.duration = parsed.duration || {};
-    latestTrailer.year = parsed.year || null;
-    latestTrailer.rating = parsed.rating || null;
-    latestTrailer.description = parsed.description || "";
-latestTrailer.directors = attachLatestTrailerFiles(
-  parsed.directors,
-  req.files?.ltDirectorFiles
-);
+  latestTrailer.producers = attachLatestTrailerFiles(
+    parsed.producers,
+    req.files?.ltProducerFiles
+  );
 
-latestTrailer.producers = attachLatestTrailerFiles(
-  parsed.producers,
-  req.files?.ltProducerFiles
-);
-
-latestTrailer.singers = attachLatestTrailerFiles(
-  parsed.singers,
-  req.files?.ltSingerFiles
-);
-
-  }
+  latestTrailer.singers = attachLatestTrailerFiles(
+    parsed.singers,
+    req.files?.ltSingerFiles
+  );
 }
 
 
@@ -233,7 +230,8 @@ latestTrailer.singers = attachLatestTrailerFiles(
     /* --------------------------------------------------
        SAVE MOVIE
     -------------------------------------------------- */
- if (!body.movieName || !body.categories || !body.rating || !body.duration) {
+if (!body.movieName || !body.categories || !body.rating || !body.duration) {
+
   return res.status(400).json({
     success: false,
     message: "movieName, categories, rating, duration required"
