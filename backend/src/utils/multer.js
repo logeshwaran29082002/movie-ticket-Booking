@@ -4,7 +4,11 @@ const cloudinary = require("./cloudinary");
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
-  params: { folder: "movies" },
+  params: {
+    folder: "movies",
+  },
 });
 
-module.exports = multer({ storage });
+const upload = multer({ storage });
+
+module.exports = upload;
