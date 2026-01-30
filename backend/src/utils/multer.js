@@ -1,17 +1,12 @@
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const cloudinary = require("cloudinary");
-
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUD_API_KEY,
-  api_secret: process.env.CLOUD_API_SECRET,
-});
+const cloudinary = require("./cloudinary");
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary.v2,
+  cloudinary,
   params: {
     folder: "movies",
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
   },
 });
 

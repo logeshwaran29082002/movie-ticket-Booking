@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Movie = require("../models/movieModel");
+const cloudinary = require("../utils/cloudinary");
 require("dotenv").config();
 
 
