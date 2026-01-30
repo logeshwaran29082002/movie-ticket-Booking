@@ -344,12 +344,17 @@ function AddPage() {
      else {
       // normal / featured / releaseSoon
       form.append("movieName", movieName);
-      form.append("categories", JSON.stringify(categories));
+      form.append(
+  "categories",
+  JSON.stringify(categories.length ? categories : ["General"])
+);
+
       if (poster) form.append("poster", poster);
       form.append("trailerUrl", trailerUrl || "");
       form.append("videoUrl", videoUrl || "");
-      form.append("rating", String(rating));
-      form.append("duration", String(duration));
+     form.append("rating", Number(rating));
+form.append("duration", Number(duration));
+
       form.append("slots", JSON.stringify(slots));
       form.append(
         "seatPrices",
@@ -401,7 +406,8 @@ function AddPage() {
     }
     try {
       const resp = await axios.post(`${API_Host}/api/movies`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
+       headers: {}
+
       });
       if (resp?.data?.success) {
         toast.success("Movie added sucessfully!");
