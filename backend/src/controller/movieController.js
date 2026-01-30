@@ -128,14 +128,14 @@ const posterUrl =
     const trailerUrl = body.trailerUrl || null;
     const videoUrl = body.videoUrl || null;
 
-    const categories =
-      safeParseJSON(body.categories) ||
-      (body.categories
-        ? String(body.categories)
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : []);
+    const categories = body.categories
+  ? safeParseJSON(body.categories) ||
+    String(body.categories)
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean)
+  : [];
+
 
     const slots = safeParseJSON(body.slots) || [];
 
@@ -193,7 +193,8 @@ if (body.type === "latestTrailers") {
 
   // optional: parse extra data
   if (body.latestTrailer) {
-    const parsed = JSON.parse(body.latestTrailer);
+const parsed = safeParseJSON(body.latestTrailer) || {};
+
 
     latestTrailer.genres = parsed.genres || [];
     latestTrailer.duration = parsed.duration || {};
