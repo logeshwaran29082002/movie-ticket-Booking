@@ -1,18 +1,13 @@
 const mongoose = require("mongoose");
 const Movie = require("../models/movieModel");
-require("dotenv").config();
-
 
 const API_BASE = process.env.API_BASE;
 
 /* ---------------------- small helpers ---------------------- */
-// Builds a full upload URL from a filename or returns null if invalid
 const getUploadUrl = (val) => {
   if (!val) return null;
   return val;
 };
-
-
 
 const attachLatestTrailerFiles = (people = [], files = []) => {
   if (!Array.isArray(people)) return [];
@@ -24,12 +19,6 @@ const attachLatestTrailerFiles = (people = [], files = []) => {
   }));
 };
 
-
-
-
-
-
-// Safely parses JSON and returns null on failure
 const safeParseJSON = (v) => {
   if (!v) return null;
   if (typeof v === "object") return v;
@@ -40,9 +29,6 @@ const safeParseJSON = (v) => {
   }
 };
 
-
-
-// Converts a person object into a {name, role, preview} format
 const personToPreview = (p) => {
   if (!p) return { name: "", role: "", preview: null };
 
@@ -52,7 +38,6 @@ const personToPreview = (p) => {
     preview: p.file ? getUploadUrl(p.file) : null,
   };
 };
-
 
 const enrichLatestTrailerForOutput = (lt = {}) => {
   const copy = { ...lt };
@@ -78,15 +63,14 @@ const enrichLatestTrailerForOutput = (lt = {}) => {
 
 const normalizeItemForOutput = (it = {}) => {
   const obj = { ...it };
- obj.thumbnail =
-  it.latestTrailer?.thumbnail
-    ? getUploadUrl(it.latestTrailer.thumbnail)
-    : it.poster
-    ? getUploadUrl(it.poster)
-    : null;
-obj.trailerUrl =
-  it.latestTrailer?.videoUrl || it.trailerUrl || null;
-
+  obj.thumbnail =
+    it.latestTrailer?.thumbnail
+      ? getUploadUrl(it.latestTrailer.thumbnail)
+      : it.poster
+      ? getUploadUrl(it.poster)
+      : null;
+  obj.trailerUrl =
+    it.latestTrailer?.videoUrl || it.trailerUrl || null;
 
   if (it.type === "latestTrailers" && it.latestTrailer) {
     const lt = it.latestTrailer;
@@ -104,7 +88,6 @@ obj.trailerUrl =
   if (it.latestTrailer)
     obj.latestTrailer = enrichLatestTrailerForOutput(it.latestTrailer);
 
-  // NEW: include auditorium in normalized output (keep null if not present)
   obj.auditorium = it.auditorium || null;
 
   return obj;
@@ -112,30 +95,32 @@ obj.trailerUrl =
 
 // Create a movie
 const createMovie = async (req, res) => {
-  console.log("BODY =>", req.body);
+  console.log("=== CREATE MOVIE REQUEST ===");
+  console.log("Type:", req.body.type);
+  console.log("Movie Name:", req.body.movieName);
+  console.log("Categories:", req.body.categories);
+  console.log("Rating:", req.body.rating);
+  console.log("Duration:", req.body.duration);
+  console.log("Files:", req.files ? Object.keys(req.files) : "NONE");
 
   try {
     const body = req.body || {};
 
-const posterUrl =
-  req.files && req.files.poster
-    ? req.files.poster[0].path
-    : null;
-
-
-
+    const posterUrl =
+      req.files && req.files.poster
+        ? req.files.poster[0].path
+        : null;
 
     const trailerUrl = body.trailerUrl || null;
     const videoUrl = body.videoUrl || null;
 
     const categories = body.categories
-  ? safeParseJSON(body.categories) ||
-    String(body.categories)
-      .split(",")
-      .map(s => s.trim())
-      .filter(Boolean)
-  : [];
-
+      ? safeParseJSON(body.categories) ||
+        String(body.categories)
+          .split(",")
+          .map(s => s.trim())
+          .filter(Boolean)
+      : [];
 
     const slots = safeParseJSON(body.slots) || [];
 
@@ -144,83 +129,73 @@ const posterUrl =
       recliner: Number(body.recliner || 0),
     };
 
-const castArray = safeParseJSON(body.cast) || [];
+    const castArray = safeParseJSON(body.cast) || [];
 
-const cast = castArray.map((c, i) => ({
-  name: c?.name || "",
-  role: c?.role || "",
-  file: req.files?.castFiles?.[i]?.path || null,
-}));
+    const cast = castArray.map((c, i) => ({
+      name: c?.name || "",
+      role: c?.role || "",
+      file: req.files?.castFiles?.[i]?.path || null,
+    }));
 
+    const directorArray = safeParseJSON(body.directors) || [];
 
-const directorArray = safeParseJSON(body.directors) || [];
+    const directors = directorArray.map((d, i) => ({
+      name: d?.name || "",
+      file: req.files?.directorFiles?.[i]?.path || null,
+    }));
 
-const directors = directorArray.map((d, i) => ({
-  name: d?.name || "",
-  file: req.files?.directorFiles?.[i]?.path || null,
-}));
-const producerArray = safeParseJSON(body.producers) || [];
+    const producerArray = safeParseJSON(body.producers) || [];
 
-const producers = producerArray.map((p, i) => ({
-  name: p?.name || "",
-  file: req.files?.producerFiles?.[i]?.path || null,
-}));
+    const producers = producerArray.map((p, i) => ({
+      name: p?.name || "",
+      file: req.files?.producerFiles?.[i]?.path || null,
+    }));
 
+    /* --------------------------------------------------
+       🔥 FORCE latestTrailer FOR latestTrailers TYPE
+    -------------------------------------------------- */
+    let latestTrailer = null;
 
-    
-/* --------------------------------------------------
-   🔥 FORCE latestTrailer FOR latestTrailers TYPE
--------------------------------------------------- */
-let latestTrailer = null;
+    if (body.type === "latestTrailers") {
+      latestTrailer = {};
 
-if (body.type === "latestTrailers") {
+      if (req.files?.ltThumbnail?.[0]?.path) {
+        latestTrailer.thumbnail = req.files.ltThumbnail[0].path;
+      }
 
-  latestTrailer = {};
+      const parsed = safeParseJSON(body.latestTrailer) || {};
 
-  // thumbnail
-  if (req.files?.ltThumbnail?.[0]?.path) {
-    latestTrailer.thumbnail = req.files.ltThumbnail[0].path;
-  }
+      const videoUrl =
+        body.ltVideoUrl ||
+        body.videoUrl ||
+        parsed?.videoId;
 
-  // parse ONCE
-  const parsed = safeParseJSON(body.latestTrailer) || {};
+      if (videoUrl) {
+        latestTrailer.videoUrl = videoUrl;
+      }
 
-  // video url
-  const videoUrl =
-    body.ltVideoUrl ||
-    body.videoUrl ||
-    parsed?.videoId;
+      latestTrailer.title = body.movieName || "";
+      latestTrailer.genres = parsed.genres || [];
+      latestTrailer.duration = parsed.duration || {};
+      latestTrailer.year = parsed.year || null;
+      latestTrailer.rating = parsed.rating || null;
+      latestTrailer.description = parsed.description || "";
 
-  if (videoUrl) {
-    latestTrailer.videoUrl = videoUrl;
-  }
+      latestTrailer.directors = attachLatestTrailerFiles(
+        parsed.directors,
+        req.files?.ltDirectorFiles
+      );
 
-  // title
-  latestTrailer.title = body.movieName || "";
+      latestTrailer.producers = attachLatestTrailerFiles(
+        parsed.producers,
+        req.files?.ltProducerFiles
+      );
 
-  // meta
-  latestTrailer.genres = parsed.genres || [];
-  latestTrailer.duration = parsed.duration || {};
-  latestTrailer.year = parsed.year || null;
-  latestTrailer.rating = parsed.rating || null;
-  latestTrailer.description = parsed.description || "";
-
-  latestTrailer.directors = attachLatestTrailerFiles(
-    parsed.directors,
-    req.files?.ltDirectorFiles
-  );
-
-  latestTrailer.producers = attachLatestTrailerFiles(
-    parsed.producers,
-    req.files?.ltProducerFiles
-  );
-
-  latestTrailer.singers = attachLatestTrailerFiles(
-    parsed.singers,
-    req.files?.ltSingerFiles
-  );
-}
-
+      latestTrailer.singers = attachLatestTrailerFiles(
+        parsed.singers,
+        req.files?.ltSingerFiles
+      );
+    }
 
     const auditoriumValue =
       typeof body.auditorium === "string" && body.auditorium.trim()
@@ -228,36 +203,43 @@ if (body.type === "latestTrailers") {
         : "Audi 1";
 
     /* --------------------------------------------------
-       SAVE MOVIE
+       VALIDATION
     -------------------------------------------------- */
-if (!body.movieName || !body.categories || !body.rating || !body.duration) {
+    if (!body.movieName || !body.categories || !body.rating || !body.duration) {
+      console.error("❌ Validation failed:", {
+        movieName: !!body.movieName,
+        categories: !!body.categories,
+        rating: !!body.rating,
+        duration: !!body.duration
+      });
+      return res.status(400).json({
+        success: false,
+        message: "movieName, categories, rating, duration required"
+      });
+    }
 
-  return res.status(400).json({
-    success: false,
-    message: "movieName, categories, rating, duration required"
-  });
-}
-
-const doc = new Movie({
-  type: body.type || "normal",
-  movieName: body.movieName,
-  categories: categories,
-  poster: posterUrl,
-  trailerUrl: trailerUrl,
-  videoUrl: videoUrl,
-  rating: Number(body.rating),
-  duration: Number(body.duration),
-  slots: slots,
-  seatPrices: seatPrices,
-  cast: cast,
-  directors: directors,
-  producers: producers,
-  story: body.story,
-  latestTrailer: latestTrailer,
-  auditorium: auditoriumValue,
-});
+    const doc = new Movie({
+      type: body.type || "normal",
+      movieName: body.movieName,
+      categories: categories,
+      poster: posterUrl,
+      trailerUrl: trailerUrl,
+      videoUrl: videoUrl,
+      rating: Number(body.rating),
+      duration: Number(body.duration),
+      slots: slots,
+      seatPrices: seatPrices,
+      cast: cast,
+      directors: directors,
+      producers: producers,
+      story: body.story,
+      latestTrailer: latestTrailer,
+      auditorium: auditoriumValue,
+    });
 
     const saved = await doc.save();
+
+    console.log("✅ Movie saved successfully:", saved._id);
 
     return res.status(201).json({
       success: true,
@@ -265,17 +247,16 @@ const doc = new Movie({
       data: saved,
     });
   } catch (err) {
-    console.error("CreateMovie Error:", err);
+    console.error("❌ CreateMovie Error:", err.message);
+    console.error("Stack:", err.stack);
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: err.message || "Server Error",
     });
   }
 };
 
-
 // Get all movies
-
 const getMovies = async (req, res) => {
   try {
     const {
@@ -288,7 +269,7 @@ const getMovies = async (req, res) => {
       latestTrailer,
     } = req.query;
     let filter = {};
-    if (typeof categories  === "string" && categories.trim())
+    if (typeof categories === "string" && categories.trim())
       filter.categories = { $in: [categories.trim()] };
     if (typeof type === "string" && type.trim()) filter.type = type.trim();
     if (typeof search === "string" && search.trim()) {
@@ -299,15 +280,15 @@ const getMovies = async (req, res) => {
         { story: { $regex: q, $options: "i" } },
       ];
     }
-      if(latestTrailer && String(latestTrailer).toLowerCase() !== 'false'){
-        filter = Object.keys(filter).length ===0 ? {
-            type:'latestTrailers'
-        } :{
-            $and:[filter,{ type:'latestTrailers'}]
-        }
+    if (latestTrailer && String(latestTrailer).toLowerCase() !== 'false') {
+      filter = Object.keys(filter).length === 0 ? {
+        type: 'latestTrailers'
+      } : {
+        $and: [filter, { type: 'latestTrailers' }]
       }
+    }
 
-       const pg = Math.max(1, parseInt(page, 10) || 1);
+    const pg = Math.max(1, parseInt(page, 10) || 1);
     const lim = Math.min(200, parseInt(limit, 10) || 12);
     const skip = (pg - 1) * lim;
 
@@ -316,61 +297,59 @@ const getMovies = async (req, res) => {
 
     const normalized = (items || []).map(normalizeItemForOutput);
     return res.json({
-        success:true,
-        total,
-        page:pg,
-        limit: lim,
-        items: normalized
+      success: true,
+      total,
+      page: pg,
+      limit: lim,
+      items: normalized
     });
   } catch (err) {
-         console.error('GetMovies Error:' , err);
-         return res.status(500).json({
-            success:false,
-            message: " Server Error"
-         })
+    console.error('GetMovies Error:', err);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error"
+    })
   }
 };
 
 // Get a movie using id
-const getMovieById = async (req,res) =>{
-    try {
-        const {id} = req.params;
-        if(!id){
-            return res.status(404).json({
-                success:false,
-                message: 'ID is required.'
-            })      
-          }
+const getMovieById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(404).json({
+        success: false,
+        message: 'ID is required.'
+      })
+    }
 
-          const item = await Movie.findById(id).lean();
-          if(!item) return res.status(404).json({
-            success:false,
-            message:"Movie not found"
-          });
+    const item = await Movie.findById(id).lean();
+    if (!item) return res.status(404).json({
+      success: false,
+      message: "Movie not found"
+    });
 
     const object = normalizeItemForOutput(item);
 
-if (item.type === "latestTrailers" && item.latestTrailer) {
-  const lt = item.latestTrailer;
-  object.genres = object.genres || lt.genres || [];
-  object.year = object.year || lt.year || null;
-  object.rating = object.rating || lt.rating || null;
-  object.duration = object.duration || lt.duration || null;
-  object.description =
-    object.description || lt.description || lt.excerpt || "";
-}
+    if (item.type === "latestTrailers" && item.latestTrailer) {
+      const lt = item.latestTrailer;
+      object.genres = object.genres || lt.genres || [];
+      object.year = object.year || lt.year || null;
+      object.rating = object.rating || lt.rating || null;
+      object.duration = object.duration || lt.duration || null;
+      object.description =
+        object.description || lt.description || lt.excerpt || "";
+    }
 
-    return res.json({success:true, item:object});
-    } 
-    catch (err) {
-   
-  console.error('GetMoviesById Error:' , err);
-         return res.status(500).json({
-            success:false,
-            message: " Server Error"
-         })
-        
-   }
+    return res.json({ success: true, item: object });
+  }
+  catch (err) {
+    console.error('GetMoviesById Error:', err);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error"
+    })
+  }
 }
 
 const deleteMovie = async (req, res) => {
@@ -401,4 +380,4 @@ const deleteMovie = async (req, res) => {
   }
 };
 
-module.exports = { createMovie,getMovies,getMovieById,deleteMovie};
+module.exports = { createMovie, getMovies, getMovieById, deleteMovie };
